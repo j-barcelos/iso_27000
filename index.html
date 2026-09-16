@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ISO/IEC 27000 — A Linguagem Universal da Segurança da Informação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f8f6f1; --paper2:#efebe3;
+  --ink:#262b32; --ink-soft:#4b5158; --ink-faint:#8d9096;
+  --line:rgba(38,43,50,.16); --line-weak:rgba(38,43,50,.09);
+  --blue:#4d7fb5; --blue-2:#8fb2d9; --blue-deep:#31567e;
+  --gold:#c29a58; --gold-deep:#a8853f;
+  --dark:#17191d;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--dark); color:#e8e6e1; overflow:hidden;
+  font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- deck & stages (scroll-snap, um slide 16:9 por viewport) ---------- */
+.deck{
+  height:100vh; height:100dvh; overflow-y:auto;
+  scroll-snap-type:y mandatory; scroll-behavior:smooth;
+  background:var(--dark);
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px);
+  background-size:26px 26px;
+}
+body.ov-open .deck{overflow:hidden}
+.stage{
+  height:100vh; height:100dvh;
+  display:grid; place-items:center;
+  scroll-snap-align:center; scroll-snap-stop:always;
+}
+.slide{
+  position:relative; aspect-ratio:16/9; overflow:hidden;
+  width:min(1560px, 94vw, calc((100vh - 110px)*16/9));
+  width:min(1560px, 94vw, calc((100dvh - 110px)*16/9));
+  background:var(--paper); color:var(--ink);
+  container-type:inline-size;
+  border-radius:3px;
+  box-shadow:0 40px 90px rgba(0,0,0,.55), 0 4px 18px rgba(0,0,0,.4);
+}
+
+/* ---------- camadas de foto full-bleed ---------- */
+.bg{
+  position:absolute; inset:0; z-index:0; overflow:hidden;
+  background:linear-gradient(120deg,#141a22,#0d1116); /* fallback gracioso */
+}
+.bg img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  filter:grayscale(.35) contrast(1.03) brightness(.95);
+  animation:kb 38s ease-in-out infinite; transform-origin:60% 40%;
+}
+.bg::after{
+  content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(100deg, rgba(12,14,17,.94) 6%, rgba(15,20,28,.84) 46%, rgba(20,36,56,.6) 100%),
+    linear-gradient(0deg,  rgba(10,12,15,.62), rgba(10,12,15,0) 42%),
+    linear-gradient(180deg,rgba(10,12,15,.5),  rgba(10,12,15,0) 26%);
+}
+@keyframes kb{0%,100%{transform:scale(1.06)}50%{transform:scale(1.13) translate(-1.2%,.8%)}}
+
+/* ---------- slides escuros: toda a paleta inverte via variáveis ---------- */
+.slide.dark{
+  background:#101519;
+  --paper:rgba(12,16,21,.55);
+  --ink:#eceae4; --ink-soft:#c6c9cc; --ink-faint:#8f959d;
+  --line:rgba(236,234,228,.22); --line-weak:rgba(236,234,228,.12);
+  --blue:#8fb6e0; --blue-2:#b9d1ec; --blue-deep:#9cc2ea;
+  --gold:#d4b077; --gold-deep:#e0bf85;
+}
+.dark kbd{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.32); color:#eceae4}
+
+/* ---------- placas espinha dorsal de fotos (slides de papel) ---------- */
+.spine{position:absolute; top:0; bottom:0; width:5.6cqw; z-index:1; overflow:hidden}
+.spine-l{left:0;  border-right:1px solid var(--line)}
+.spine-r{right:0; border-left:1px solid var(--line)}
+.spine .ph{
+  position:absolute; inset:0; background-color:#7ba3cf;
+  background-size:cover; background-position:center;
+  filter:grayscale(1) contrast(.92) brightness(1.05);
+}
+.spine::after{content:""; position:absolute; inset:0; z-index:1;
+  background:linear-gradient(180deg, rgba(77,127,181,.8), rgba(49,86,126,.9)); mix-blend-mode:multiply}
+.spine .plate{
+  position:absolute; z-index:2; left:50%; top:2.6cqw; transform:translateX(-50%);
+  writing-mode:vertical-rl; background:var(--paper); color:var(--blue-deep);
+  font:500 .72cqw 'IBM Plex Mono'; letter-spacing:.3em; text-transform:uppercase;
+  padding:1cqw .3cqw; border:1px solid var(--line); white-space:nowrap;
+}
+.slide.spine-l .content{left:12cqw}
+.slide.spine-r .content{right:12cqw}
+.slide.spine-l .sfoot{left:12cqw}
+.slide.spine-r .sfoot{right:12cqw}
+.slide.spine-l .marks i:nth-child(1),.slide.spine-l .marks i:nth-child(3),
+.slide.spine-r .marks i:nth-child(2),.slide.spine-r .marks i:nth-child(4){opacity:0}
+
+/* ---------- chrome do slide (injetado) ---------- */
+.content,.marks,.sfoot{z-index:2}
+.marks i{position:absolute; width:1.3cqw; height:1.3cqw; opacity:.38}
+.marks i::before{content:""; position:absolute; left:50%; top:0; bottom:0; width:1px; background:var(--ink); transform:translateX(-50%)}
+.marks i::after{content:""; position:absolute; top:50%; left:0; right:0; height:1px; background:var(--ink); transform:translateY(-50%)}
+.marks i:nth-child(1){top:2.1cqw; left:2.1cqw}
+.marks i:nth-child(2){top:2.1cqw; right:2.1cqw}
+.marks i:nth-child(3){bottom:2.1cqw; left:2.1cqw}
+.marks i:nth-child(4){bottom:2.1cqw; right:2.1cqw}
+.sfoot{
+  position:absolute; left:7cqw; right:7cqw; bottom:2.7cqw;
+  display:flex; justify-content:space-between; align-items:baseline;
+  border-top:1px solid var(--line); padding-top:1cqw;
+  font:400 .92cqw 'IBM Plex Mono'; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint);
+}
+
+/* ---------- tipo compartilhado ---------- */
+.content{position:absolute; inset:5.6cqw 6.6cqw 8.6cqw}
+.kicker{
+  font:500 1.02cqw 'IBM Plex Mono'; letter-spacing:.3em; text-transform:uppercase;
+  color:var(--blue-deep); display:flex; align-items:center; gap:1.2cqw;
+}
+.kicker::before{content:""; width:2.6cqw; height:1px; background:var(--gold); flex:none}
+.display{
+  font-family:Fraunces,serif; font-weight:420; font-size:4.2cqw; line-height:1.05;
+  letter-spacing:-.015em; color:var(--ink); margin:1.5cqw 0 2cqw;
+}
+.display em{font-style:italic; font-weight:380; color:var(--blue)}
+.body{font-size:1.28cqw; line-height:1.72; color:var(--ink-soft); max-width:34cqw; margin:0}
+.body b{color:var(--ink)}
+svg text{font-family:'IBM Plex Mono',monospace; user-select:none}
+svg .fs{font-family:Fraunces,serif}
+
+/* ---------- sistema de revelação (reproduz a cada visita) ---------- */
+[data-r]{opacity:0; transform:translateY(26px);
+  transition:opacity .8s cubic-bezier(.25,.7,.3,1) calc(var(--d,0)*.1s + .05s),
+             transform .95s cubic-bezier(.22,.8,.28,1) calc(var(--d,0)*.1s + .05s)}
+.is-in [data-r]{opacity:1; transform:none}
+[data-fade]{opacity:0; transition:opacity 1.1s ease calc(var(--d,0)*.12s + .1s)}
+.is-in [data-fade]{opacity:1}
+[data-pop]{opacity:0; transform:scale(.5); transform-box:fill-box; transform-origin:center;
+  transition:opacity .55s ease calc(var(--d,0)*.1s + .25s),
+             transform .7s cubic-bezier(.34,1.45,.4,1) calc(var(--d,0)*.1s + .25s)}
+.is-in [data-pop]{opacity:1; transform:scale(1)}
+[data-draw]{stroke-dasharray:1; stroke-dashoffset:1; opacity:0;
+  transition:stroke-dashoffset 1.15s cubic-bezier(.55,.06,.25,1) calc(var(--d,0)*.13s + .2s),
+             opacity .01s linear calc(var(--d,0)*.13s + .2s)}
+.is-in [data-draw]{stroke-dashoffset:0; opacity:1}
+.seg{stroke-dasharray:0 100;
+  transition:stroke-dasharray 1.4s cubic-bezier(.6,0,.2,1) calc(var(--d,0)*.18s + .35s)}
+.is-in .seg{stroke-dasharray:var(--seg)}
+
+/* ---------- movimento ambiente ---------- */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinRev{to{transform:rotate(-360deg)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes ping{0%{transform:scale(.5);opacity:.9}80%,100%{transform:scale(2.6);opacity:0}}
+.spin-slow{animation:spin 70s linear infinite; transform-box:view-box; transform-origin:center}
+.spin-rev{animation:spinRev 46s linear infinite; transform-box:view-box; transform-origin:center}
+.floaty{animation:floaty 8s ease-in-out infinite}
+.ping{animation:ping 2.6s ease-out infinite; transform-box:fill-box; transform-origin:center}
+
+/* ---------- slide 1 · capa ---------- */
+.cover-grid{display:grid; grid-template-columns:1.12fr .88fr; height:100%; align-items:center; gap:2cqw}
+.cover-title{margin:2.2cqw 0 2.4cqw; line-height:1; font-family:Fraunces,serif; color:var(--ink)}
+.cover-title .l1{display:block; font-weight:340; font-size:3.3cqw; letter-spacing:.01em}
+.cover-title .l2{display:block; font-weight:540; font-size:10.4cqw; letter-spacing:-.025em; margin:.4cqw 0 .6cqw}
+.cover-title .l2 i{font-style:normal; color:var(--gold)}
+.cover-title .fam{font-weight:340; font-style:italic; font-size:5.4cqw; color:var(--gold-deep); letter-spacing:0}
+.cover-sub{font:italic 380 2cqw/1.5 Fraunces,serif; color:var(--ink-soft); max-width:36cqw; margin:0}
+.cover-meta{
+  display:flex; align-items:center; gap:1.6cqw; margin-top:3.4cqw; padding-top:1.6cqw;
+  border-top:1px solid var(--line); font:400 1cqw 'IBM Plex Mono'; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+.cover-meta .sep{width:.45cqw; height:.45cqw; background:var(--gold); transform:rotate(45deg)}
+kbd{font:500 .95em 'IBM Plex Mono'; border:1px solid var(--line); border-bottom-width:2px; border-radius:3px;
+  padding:.08em .45em; background:#fff; color:var(--ink)}
+.cover-fig{height:100%; display:grid; place-items:center}
+.cover-fig svg{height:97%; max-width:100%}
+
+/* ---------- slide 2 · consenso ---------- */
+.s-consensus .content{display:flex; flex-direction:column; justify-content:space-between}
+.cols-2{display:grid; grid-template-columns:1fr 1fr; gap:5cqw; align-items:start}
+.notes{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1.5cqw}
+.notes li{position:relative; padding-left:2.4cqw; font-size:1.28cqw; line-height:1.55; color:var(--ink-soft)}
+.notes li b{color:var(--ink); font-weight:600}
+.notes li::before{content:""; position:absolute; left:.2cqw; top:.5em; width:.62cqw; height:.62cqw;
+  border:1px solid var(--gold); transform:rotate(45deg)}
+.fig-wide{align-self:center; width:72%}
+.fig-wide svg{width:100%; height:auto; display:block}
+
+/* ---------- slide 3 · linguagem universal ---------- */
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:4cqw; height:100%; align-items:center}
+.c-right{height:100%; display:grid; place-items:center}
+.c-right svg{max-height:100%; max-width:100%}
+.def{margin:2.4cqw 0 0; padding:2cqw 2.4cqw; border-left:2px solid var(--gold); background:rgba(194,154,88,.07)}
+.def p{margin:0; font:italic 400 1.68cqw/1.55 Fraunces,serif; color:var(--ink)}
+.def cite{display:block; margin-top:1.2cqw; font:400 .95cqw 'IBM Plex Mono'; font-style:normal;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint)}
+.term{font-style:normal; border-bottom:.16em solid; padding:0 .06em; transition:color .2s, border-color .2s, background .2s}
+.t-c{color:var(--blue-deep); border-color:rgba(77,127,181,.35)}
+.t-i{color:var(--gold-deep); border-color:rgba(168,133,63,.35)}
+.t-a{color:var(--ink); border-color:rgba(38,43,50,.3)}
+.t-c.hot{background:rgba(77,127,181,.12); border-color:var(--blue-deep)}
+.t-i.hot{background:rgba(194,154,88,.16); border-color:var(--gold-deep)}
+.t-a.hot{background:rgba(38,43,50,.08); border-color:var(--ink)}
+.venn-g{cursor:pointer}
+.venn-g circle{transition:stroke-width .25s, fill-opacity .25s; fill-opacity:.06}
+.venn-g.hot circle{stroke-width:3.6; fill-opacity:.14}
+.venn-g text{transition:opacity .25s; opacity:.85}
+.venn-g.hot text{opacity:1}
+
+/* ---------- slide 4 · mapa familiar ---------- */
+.grid-map{display:grid; grid-template-columns:36% 1fr; gap:3cqw; height:100%; align-items:center}
+.m-left{display:flex; flex-direction:column; gap:1.6cqw}
+.m-left .body{max-width:100%}
+.m-right{height:100%; display:grid; place-items:center}
+.m-right svg{max-height:100%; max-width:100%}
+.sat{cursor:pointer}
+.sat .in{transition:transform .25s; transform-box:fill-box; transform-origin:center}
+.sat:hover .in{transform:scale(1.08)}
+.sat circle{transition:stroke .25s, stroke-width .25s}
+.sat:hover circle{stroke:var(--gold); stroke-width:2}
+.node-cap{border-left:2px solid var(--gold); padding-left:1.8cqw; margin-top:.8cqw;
+  transition:opacity .22s ease, transform .22s ease}
+.node-cap.swap{opacity:0; transform:translateX(8px)}
+.node-cap .nc-code{display:block; font:600 1.05cqw 'IBM Plex Mono'; letter-spacing:.16em; color:var(--blue-deep); margin-bottom:.5cqw}
+.node-cap .nc-text{font:italic 380 1.22cqw/1.5 Fraunces,serif; color:var(--ink-soft)}
+
+/* ---------- slide 5 · PDCA ---------- */
+.pdca-fig{height:100%; display:grid; place-items:center}
+.pdca-fig svg{max-height:100%; max-width:100%}
+.legend{list-style:none; margin:2.4cqw 0 0; padding:0; display:flex; flex-direction:column; gap:1cqw}
+.legend li{display:flex; align-items:center; gap:1.2cqw; font:400 1.1cqw 'IBM Plex Mono'; letter-spacing:.03em; color:var(--ink-soft)}
+.legend i{width:2.6cqw; height:.5cqw; border-radius:2px; flex:none}
+
+/* ---------- slide 6 · risco ---------- */
+.risk-grid{display:grid; grid-template-columns:36% 1fr; gap:3cqw; height:100%; align-items:center}
+.risk-fig{height:100%; display:grid; place-items:center}
+.risk-fig svg{max-width:100%; max-height:100%}
+
+/* ---------- slide 7 · anexo A ---------- */
+.a-grid{display:grid; grid-template-columns:1fr 1.15fr; gap:4cqw; height:100%; align-items:center}
+.a-right{display:grid; grid-template-columns:1fr .92fr; gap:3cqw; align-items:center}
+.a-right .donut{width:100%; max-width:34cqw}
+.a-legend{display:flex; flex-direction:column}
+.a-row{display:flex; justify-content:space-between; align-items:baseline; gap:2cqw;
+  padding:1.15cqw 0; border-bottom:1px solid var(--line)}
+.a-row:first-child{border-top:1px solid var(--line)}
+.a-row .nm{font-size:1.3cqw; color:var(--ink); font-weight:500}
+.a-row .nm i{display:inline-block; width:.9cqw; height:.9cqw; border-radius:50%; margin-right:1cqw}
+.a-row .ds{display:block; margin-top:.35cqw; font-size:1cqw; color:var(--ink-faint)}
+.a-row .ct{font:500 1.4cqw 'IBM Plex Mono'; color:var(--ink-soft)}
+
+/* ---------- slide 8 · jornada ---------- */
+.s-journey .content{display:flex; flex-direction:column}
+.timeline{margin-top:auto; width:100%}
+.timeline svg{width:100%; height:auto; display:block}
+
+/* ---------- slide 9 · alcance ---------- */
+.s-reach .content{display:flex; flex-direction:column}
+.stats{display:flex; gap:6cqw; align-items:flex-start; margin:auto 0}
+.stat{border-top:1px solid var(--ink); padding-top:1.8cqw; min-width:19cqw}
+.stat:nth-child(2){margin-top:5cqw}
+.stat:nth-child(3){margin-top:10cqw}
+.stat-num{font-family:Fraunces,serif; font-weight:460; font-size:6.8cqw; line-height:1; color:var(--ink); letter-spacing:-.02em}
+.stat-num .suf{color:var(--gold); font-weight:340}
+.stat-lbl{margin-top:1.2cqw; font:400 .95cqw/1.7 'IBM Plex Mono'; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint)}
+.closing{align-self:flex-end; margin:0; font:italic 380 2.3cqw/1.4 Fraunces,serif; color:var(--ink-soft); max-width:44cqw; text-align:right}
+.closing em{color:var(--blue)}
+
+/* ---------- slide 10 · fechar ---------- */
+.s-close .content{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center}
+.close-mark{color:var(--gold); margin-bottom:2cqw}
+.close-mark svg{width:4.2cqw; height:4.2cqw}
+.s-close .display{font-size:5cqw; margin:0 0 2.2cqw}
+.close-sub{font-size:1.35cqw; color:var(--ink-soft); margin:0}
+.close-keys{margin-top:3.6cqw; padding-top:1.6cqw; border-top:1px solid var(--line);
+  font:400 1cqw 'IBM Plex Mono'; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint);
+  display:flex; gap:1.8cqw; align-items:center}
+.fineprint{margin-top:2.2cqw; font-size:.92cqw; color:var(--ink-faint); max-width:52cqw; line-height:1.7}
+.deco-ring{position:absolute; opacity:.5; pointer-events:none}
+.deco-ring svg{width:100%; height:100%}
+.deco-ring.tr{right:-11cqw; top:-13cqw; width:36cqw; height:36cqw}
+.deco-ring.bl{left:-12cqw; bottom:-14cqw; width:30cqw; height:30cqw}
+
+/* ---------- HUD ---------- */
+.hud{position:fixed; inset:0; z-index:40; pointer-events:none}
+.prog{position:absolute; top:0; left:0; right:0; height:2px; background:rgba(255,255,255,.08)}
+.prog span{display:block; height:100%; width:0; background:var(--gold); transition:width .15s linear}
+.brand{position:absolute; top:16px; left:22px; display:flex; align-items:center; gap:10px;
+  font:500 10px 'IBM Plex Mono'; letter-spacing:.26em; color:rgba(255,255,255,.6)}
+.brand svg{width:15px; height:15px; color:var(--gold)}
+.counter{position:absolute; top:14px; right:22px; font:500 11px 'IBM Plex Mono'; letter-spacing:.2em; color:rgba(255,255,255,.55)}
+.counter b{color:var(--gold); font-weight:600}
+.hints{position:absolute; bottom:16px; left:22px; font:400 10px 'IBM Plex Mono'; letter-spacing:.14em; color:rgba(255,255,255,.38); display:flex; gap:14px}
+.hud kbd{border-color:rgba(255,255,255,.28); background:rgba(255,255,255,.07); color:#ddd}
+.navbtns{position:fixed; bottom:12px; right:18px; z-index:40; display:flex; gap:8px}
+.navbtns button{width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.28);
+  background:transparent; color:#cfcfcf; cursor:pointer; display:grid; place-items:center; transition:.2s}
+.navbtns button:hover{background:var(--gold); border-color:var(--gold); color:var(--dark)}
+.dots{position:fixed; right:20px; top:50%; transform:translateY(-50%); z-index:40; display:flex; flex-direction:column; gap:11px}
+.dots .dot{width:8px; height:8px; border-radius:50%; border:1px solid rgba(255,255,255,.45); background:transparent; cursor:pointer; padding:0; transition:.2s}
+.dots .dot.on{background:var(--gold); border-color:var(--gold); transform:scale(1.25)}
+.toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); z-index:60;
+  background:#0e1013; color:#ddd; border:1px solid rgba(255,255,255,.14); border-radius:4px;
+  font:400 11px 'IBM Plex Mono'; letter-spacing:.08em; padding:9px 16px;
+  opacity:0; pointer-events:none; transition:.35s}
+.toast.on{opacity:1; transform:translate(-50%,0)}
+
+/* ---------- ESC · visão geral ---------- */
+.overview{position:fixed; inset:0; z-index:50; display:flex; flex-direction:column;
+  padding:4.5vh 4.5vw 3.5vh; background:rgba(13,15,18,.94); backdrop-filter:blur(14px);
+  opacity:0; pointer-events:none; transition:opacity .3s ease}
+.overview.show{opacity:1; pointer-events:auto}
+.ov-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2.8vh}
+.ov-head .t{font-family:Fraunces,serif; font-size:24px; color:#f0eee9}
+.ov-head .h{font:400 10px 'IBM Plex Mono'; letter-spacing:.2em; color:rgba(255,255,255,.45); text-transform:uppercase}
+.ov-grid{overflow:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:24px 22px; align-content:start; padding-bottom:2vh}
+.ov-cell{background:none; border:0; padding:0; text-align:left; cursor:pointer; position:relative}
+.ov-cell:focus-visible{outline:none}
+.ov-frame{display:block; aspect-ratio:16/9; overflow:hidden; border-radius:4px; position:relative;
+  outline:1px solid rgba(255,255,255,.14); transition:outline-color .2s, transform .25s, box-shadow .25s}
+.ov-cell:hover .ov-frame{transform:translateY(-3px); box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.ov-cell.sel .ov-frame{outline:2px solid var(--gold)}
+.ov-num{position:absolute; top:9px; left:9px; z-index:2; font:600 10px 'IBM Plex Mono'; letter-spacing:.16em;
+  color:var(--dark); background:var(--gold); padding:3px 8px; border-radius:2px}
+.ov-cap{display:block; margin-top:9px; font:400 10px 'IBM Plex Mono'; letter-spacing:.16em;
+  color:rgba(255,255,255,.55); text-transform:uppercase}
+.ov-scale{display:block; width:1280px; height:720px; transform-origin:0 0; pointer-events:none}
+.ov-scale .slide{border-radius:0; box-shadow:none}
+
+@media (max-width:760px){
+  .hints,.dots,.brand span{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important; transition:none!important}
+  [data-r],[data-fade],[data-pop]{opacity:1!important; transform:none!important}
+  [data-draw]{opacity:1!important; stroke-dashoffset:0!important}
+  .seg{stroke-dasharray:var(--seg)!important}
+  .bg img{transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- hud fixo -->
+<div class="hud">
+  <div class="prog"><span id="progFill"></span></div>
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 3.2v6.3c0 5.2-3.4 8.4-8 10.5-4.6-2.1-8-5.3-8-10.5V5.2z"/><path d="M8.6 12l2.4 2.4 4.6-5"/></svg>
+    <span>ISO/IEC 27000 · INFOSEG</span>
+  </div>
+  <div class="counter"><b id="cCur">01</b> / <span id="cTot">10</span></div>
+  <div class="hints">
+    <span><kbd>←</kbd> <kbd>→</kbd> navegar</span>
+    <span><kbd>ESC</kbd> visão geral</span>
+    <span><kbd>1–9</kbd> saltar</span>
+  </div>
+</div>
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+<div class="navbtns">
+  <button id="prevB" aria-label="Slide anterior"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button id="nextB" aria-label="Próximo slide"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- o deck -->
+<main class="deck" id="deck">
+
+  <!-- 1 · CAPA -->
+  <section class="stage"><div class="slide s-cover dark">
+    <div class="bg" aria-hidden="true">
+      <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1800&q=80" alt="" loading="eager" decoding="async">
+    </div>
+    <div class="content cover-grid">
+      <div>
+        <div class="kicker" data-r style="--d:0">ISO/IEC JTC 1 · SC 27 — Segurança da informação</div>
+        <h1 class="cover-title">
+          <span class="l1" data-r style="--d:1">A família</span>
+          <span class="l2" data-r style="--d:2">ISO/IEC<i>.</i></span>
+          <span class="fam" data-r style="--d:3">27000</span>
+        </h1>
+        <p class="cover-sub" data-r style="--d:4">O consenso global e a linguagem universal da segurança da informação.</p>
+        <div class="cover-meta" data-r style="--d:5">
+          <span>Um tour guiado em dez slides</span><span class="sep"></span><span>Pressione <kbd>→</kbd> para começar</span>
+        </div>
+      </div>
+      <div class="cover-fig" data-fade style="--d:2">
+        <svg viewBox="0 0 540 540" aria-hidden="true">
+          <g class="spin-slow"><circle cx="270" cy="270" r="258" fill="none" stroke="var(--ink)" stroke-opacity=".3" stroke-width="1" stroke-dasharray="2 9"/></g>
+          <g class="spin-rev"><circle cx="270" cy="270" r="241" fill="none" stroke="var(--gold)" stroke-width="1.6" pathLength="100" stroke-dasharray="14 86" opacity=".9"/></g>
+          <g fill="none" stroke="var(--ink)" stroke-width="1.1" opacity=".55">
+            <circle cx="270" cy="270" r="168" data-draw style="--d:1"/>
+            <ellipse cx="270" cy="270" rx="168" ry="62" data-draw style="--d:2"/>
+            <ellipse cx="270" cy="270" rx="62" ry="168" data-draw style="--d:2"/>
+            <ellipse cx="270" cy="270" rx="120" ry="168" data-draw style="--d:3"/>
+            <ellipse cx="270" cy="270" rx="168" ry="118" data-draw style="--d:3"/>
+          </g>
+          <g class="floaty">
+            <g fill="none" stroke="var(--blue)" stroke-width="1.3" opacity=".7">
+              <path d="M160 190 Q 220 232 264 258" data-draw style="--d:4"/>
+              <path d="M352 148 Q 320 212 276 256" data-draw style="--d:5"/>
+              <path d="M408 292 Q 340 292 278 270" data-draw style="--d:6"/>
+              <path d="M236 386 Q 250 330 266 278" data-draw style="--d:7"/>
+              <path d="M150 330 Q 200 312 256 278" data-draw style="--d:8"/>
+              <path d="M300 120 Q 282 190 271 232" data-draw style="--d:9"/>
+            </g>
+            <g fill="var(--blue)">
+              <circle cx="160" cy="190" r="4" data-pop style="--d:5"/>
+              <circle cx="408" cy="292" r="4" data-pop style="--d:6"/>
+              <circle cx="236" cy="386" r="4" data-pop style="--d:7"/>
+              <circle cx="150" cy="330" r="4" data-pop style="--d:8"/>
+              <circle cx="300" cy="120" r="4" data-pop style="--d:9"/>
+            </g>
+            <g data-pop style="--d:6">
+              <circle cx="352" cy="148" r="5" fill="var(--gold)"/>
+              <circle cx="352" cy="148" r="5" fill="none" stroke="var(--gold)" class="ping"/>
+            </g>
+            <g fill="var(--ink)" opacity=".75" font-size="12">
+              <text x="142" y="176">27000</text>
+              <text x="336" y="132">27001</text>
+              <text x="414" y="314">27005</text>
+              <text x="220" y="408">27002</text>
+              <text x="286" y="104">27017</text>
+            </g>
+          </g>
+          <g data-pop style="--d:10">
+            <path d="M270 234 l30 12 v22 c0 21 -13 34 -30 42 c-17 -8 -30 -21 -30 -42 v-22 z" fill="var(--paper)" stroke="var(--gold)" stroke-width="2"/>
+            <path d="M258 268 l9 9 l17 -19" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 2 · CONSENSO GLOBAL -->
+  <section class="stage"><div class="slide s-consensus dark">
+    <div class="bg" aria-hidden="true">
+      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1800&q=80" alt="" loading="lazy" decoding="async">
+    </div>
+    <div class="content">
+      <div class="kicker" data-r style="--d:0">01 — O consenso global</div>
+      <h2 class="display" data-r style="--d:1">Muitas vozes.<br><em>Uma linguagem.</em></h2>
+      <div class="cols-2">
+        <p class="body" data-r style="--d:2">Cada palavra na família 27000 é elaborada, debatida e acordada por especialistas de órgãos nacionais de normalização ao redor do mundo, dentro do Comitê Técnico Conjunto ISO/IEC SC&nbsp;27. <b>Nenhuma empresa possui. Nenhum país possui. O consenso sim</b> — é isso que torna o texto um terreno neutro para reguladores, auditores e engenheiros.</p>
+        <ul class="notes">
+          <li data-r style="--d:3"><b>Elaborado</b> por grupos de trabalho internacionais</li>
+          <li data-r style="--d:4"><b>Acordado</b> linha por linha, por voto de consenso</li>
+          <li data-r style="--d:5"><b>Pertence</b> a ninguém — utilizável por todos</li>
+        </ul>
+      </div>
+      <div class="fig-wide" data-fade style="--d:4">
+        <svg viewBox="0 0 940 250" aria-hidden="true">
+          <g fill="none" stroke-width="1.4">
+            <path d="M24 36  Q 260 60 446 114" stroke="var(--blue)" opacity=".8" data-draw style="--d:1"/>
+            <path d="M24 125 Q 240 125 444 125" stroke="var(--blue-2)" opacity=".85" data-draw style="--d:2"/>
+            <path d="M24 214 Q 260 190 446 136" stroke="var(--gold)" opacity=".9" data-draw style="--d:3"/>
+            <path d="M916 36  Q 680 60 494 114" stroke="var(--gold)" opacity=".9" data-draw style="--d:4"/>
+            <path d="M916 125 Q 700 125 496 125" stroke="var(--blue-2)" opacity=".85" data-draw style="--d:5"/>
+            <path d="M916 214 Q 680 190 494 136" stroke="var(--blue)" opacity=".8" data-draw style="--d:6"/>
+          </g>
+          <g fill="var(--paper)" stroke="var(--blue)" stroke-width="1.5">
+            <circle cx="24" cy="36" r="5" data-pop style="--d:1"/>
+            <circle cx="24" cy="125" r="5" data-pop style="--d:2"/>
+            <circle cx="24" cy="214" r="5" data-pop style="--d:3"/>
+            <circle cx="916" cy="36" r="5" data-pop style="--d:4"/>
+            <circle cx="916" cy="125" r="5" data-pop style="--d:5"/>
+            <circle cx="916" cy="214" r="5" data-pop style="--d:6"/>
+          </g>
+          <g data-pop style="--d:7">
+            <circle cx="470" cy="125" r="27" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.4"/>
+            <path d="M458 125 l8 8 l16 -18" fill="none" stroke="var(--gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <text x="470" y="212" text-anchor="middle" font-size="12.5" letter-spacing="3" fill="var(--ink)" opacity=".65" data-fade style="--d:8">ISO/IEC JTC 1 · SC 27 — ONDE AS PALAVRAS SÃO ACORDADAS</text>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 3 · LINGUAGEM UNIVERSAL / CIA -->
+  <section class="stage"><div class="slide s-cia spine-l">
+    <div class="spine" aria-hidden="true">
+      <div class="ph" style="background-image:url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=700&q=75')"></div>
+      <span class="plate">Placa 01 · O léxico</span>
+    </div>
+    <div class="content grid-2">
+      <div>
+        <div class="kicker" data-r style="--d:0">02 — A linguagem universal</div>
+        <h2 class="display" data-r style="--d:1">Um dicionário<br>antes de um manual.</h2>
+        <p class="body" data-r style="--d:2">A ISO/IEC 27000 fixa o significado de cada termo que a família usa — <i>ativo, ameaça, vulnerabilidade, risco, controle</i> — para que uma frase escrita em um país seja lida identicamente em qualquer outro. Auditores, engenheiros, reguladores e conselhos podem debater substância, não semântica.</p>
+        <blockquote class="def" data-r style="--d:3">
+          <p>"Segurança da informação — preservação da <span class="term t-c" data-term="c">confidencialidade</span>, <span class="term t-i" data-term="i">integridade</span> e <span class="term t-a" data-term="a">disponibilidade</span> da informação."</p>
+          <cite>— ISO/IEC 27000 · Visão geral e vocabulário</cite>
+        </blockquote>
+      </div>
+      <div class="c-right" data-fade style="--d:3">
+        <svg viewBox="0 0 440 420" aria-hidden="true">
+          <g class="venn-g" data-v="c">
+            <circle class="main" cx="220" cy="150" r="108" fill="var(--blue)" stroke="var(--blue)" stroke-width="2" data-draw style="--d:1"/>
+            <text class="fs" x="220" y="112" text-anchor="middle" font-size="42" fill="var(--blue-deep)">C</text>
+          </g>
+          <g class="venn-g" data-v="i">
+            <circle class="main" cx="162" cy="252" r="108" fill="var(--gold)" stroke="var(--gold)" stroke-width="2" data-draw style="--d:2"/>
+            <text class="fs" x="126" y="300" text-anchor="middle" font-size="42" fill="var(--gold-deep)">I</text>
+          </g>
+          <g class="venn-g" data-v="a">
+            <circle class="main" cx="278" cy="252" r="108" fill="var(--ink)" stroke="var(--ink)" stroke-width="2" data-draw style="--d:3"/>
+            <text class="fs" x="316" y="300" text-anchor="middle" font-size="42" fill="var(--ink)">A</text>
+          </g>
+          <g data-pop style="--d:5">
+            <circle cx="220" cy="216" r="4" fill="var(--gold)"/>
+            <circle cx="220" cy="216" r="4" fill="none" stroke="var(--gold)" class="ping"/>
+          </g>
+          <text x="220" y="400" text-anchor="middle" font-size="12" letter-spacing="3.5" fill="var(--ink)" opacity=".55" data-fade style="--d:6">SEGURANÇA DA INFORMAÇÃO</text>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 4 · MAPA FAMILIAR -->
+  <section class="stage"><div class="slide s-map spine-r">
+    <div class="spine" aria-hidden="true">
+      <div class="ph" style="background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=700&q=75')"></div>
+      <span class="plate">Placa 02 · A organização</span>
+    </div>
+    <div class="content grid-map">
+      <div class="m-left">
+        <div class="kicker" data-r style="--d:0">03 — Uma família</div>
+        <h2 class="display" data-r style="--d:1">Uma família,<br>não um monólito.</h2>
+        <p class="body" data-r style="--d:2">No centro está a <b>ISO/IEC 27001</b> — o único padrão da família contra o qual uma organização pode ser certificada. Ao redor dela, companheiros explicam, estendem e especializam.</p>
+        <div class="node-cap" id="nodeCap" data-r style="--d:3">
+          <span class="nc-code" id="ncCode">ISO/IEC 27001</span>
+          <span class="nc-text" id="ncText">Sistemas de gestão de segurança da informação — Requisitos. O núcleo certificável.</span>
+        </div>
+      </div>
+      <div class="m-right" data-fade style="--d:2">
+        <svg viewBox="0 0 600 600" aria-hidden="true">
+          <circle cx="300" cy="300" r="160" fill="none" stroke="var(--line-weak)" stroke-width="1" stroke-dasharray="1 7" data-fade/>
+          <circle cx="300" cy="300" r="74" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="3 7" opacity=".8" class="spin-rev"/>
+          <g stroke="var(--blue)" stroke-width="1.1" opacity=".5">
+            <line x1="300" y1="232" x2="300" y2="190" data-draw style="--d:2"/>
+            <line x1="340" y1="245" x2="365" y2="211" data-draw style="--d:3"/>
+            <line x1="365" y1="279" x2="405" y2="266" data-draw style="--d:4"/>
+            <line x1="365" y1="321" x2="405" y2="334" data-draw style="--d:5"/>
+            <line x1="340" y1="355" x2="365" y2="389" data-draw style="--d:6"/>
+            <line x1="300" y1="368" x2="300" y2="410" data-draw style="--d:7"/>
+            <line x1="260" y1="355" x2="235" y2="389" data-draw style="--d:8"/>
+            <line x1="235" y1="321" x2="195" y2="334" data-draw style="--d:9"/>
+            <line x1="235" y1="279" x2="195" y2="266" data-draw style="--d:10"/>
+            <line x1="260" y1="245" x2="235" y2="211" data-draw style="--d:11"/>
+          </g>
+          <g id="mapCenter" data-pop style="--d:1">
+            <circle cx="300" cy="300" r="62" fill="var(--blue)"/>
+            <text x="300" y="292" text-anchor="middle" font-size="10" letter-spacing="2" fill="#fff" opacity=".75">ISO/IEC</text>
+            <text x="300" y="320" text-anchor="middle" font-size="26" font-weight="600" fill="#fff">27001</text>
+          </g>
+          <!-- satélites (cliqueáveis) -->
+          <g class="sat" transform="translate(300,140)" data-code="ISO/IEC 27000" data-full="Visão geral e vocabulário. O dicionário e o mapa da família."><g class="in" data-pop style="--d:2"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27000</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">vocabulário</text></g></g>
+          <g class="sat" transform="translate(394,171)" data-code="ISO/IEC 27002" data-full="Código de prática para controles de segurança da informação. O companheiro de como fazer."><g class="in" data-pop style="--d:3"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27002</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">controles</text></g></g>
+          <g class="sat" transform="translate(452,251)" data-code="ISO/IEC 27003" data-full="Orientação para implementação de um sistema de gestão de segurança da informação."><g class="in" data-pop style="--d:4"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27003</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">implementar</text></g></g>
+          <g class="sat" transform="translate(452,349)" data-code="ISO/IEC 27004" data-full="Monitoramento, medição, análise e avaliação do desempenho do SGSI."><g class="in" data-pop style="--d:5"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27004</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">medir</text></g></g>
+          <g class="sat" transform="translate(394,429)" data-code="ISO/IEC 27005" data-full="Gestão de riscos de segurança da informação. O playbook de riscos da família."><g class="in" data-pop style="--d:6"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27005</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">risco</text></g></g>
+          <g class="sat" transform="translate(300,460)" data-code="ISO/IEC 27017" data-full="Controles de segurança para serviços em nuvem — uma extensão à prova de nuvem do 27002."><g class="in" data-pop style="--d:7"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27017</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">seg. nuvem</text></g></g>
+          <g class="sat" transform="translate(206,429)" data-code="ISO/IEC 27018" data-full="Proteção de informações pessoais identificáveis em nuvens públicas."><g class="in" data-pop style="--d:8"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27018</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">priv. nuvem</text></g></g>
+          <g class="sat" transform="translate(148,349)" data-code="ISO/IEC 27701" data-full="Gestão de informações de privacidade — estende a 27001 com controles de privacidade."><g class="in" data-pop style="--d:9"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27701</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">privacidade</text></g></g>
+          <g class="sat" transform="translate(148,251)" data-code="ISO/IEC 27035" data-full="Gestão de incidentes de segurança da informação — detectar, responder, aprender."><g class="in" data-pop style="--d:10"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27035</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">incidentes</text></g></g>
+          <g class="sat" transform="translate(206,171)" data-code="ISO/IEC 27031" data-full="Readiness de TIC para continuidade de negócios."><g class="in" data-pop style="--d:11"><circle r="44" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/><text y="1" text-anchor="middle" font-size="13.5" font-weight="500" fill="var(--ink)">27031</text><text y="18" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">pronto TIC</text></g></g>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 5 · ISMS / PDCA -->
+  <section class="stage"><div class="slide s-pdca">
+    <div class="content grid-2">
+      <div>
+        <div class="kicker" data-r style="--d:0">04 — O motor: SGSI</div>
+        <h2 class="display" data-r style="--d:1">Um sistema que<br><em>melhora a si mesmo.</em></h2>
+        <p class="body" data-r style="--d:2">A ISO/IEC 27001 não certifica um produto — descreve um <b>sistema de gestão</b> que roda no ciclo Planejar-Fazer-Verificar-Agir: planejar em torno do contexto e risco, fazer os controles, verificar se realmente funcionam, agir sobre o que aprendeu. Depois suba.</p>
+        <ul class="legend">
+          <li data-r style="--d:3"><i style="background:var(--blue)"></i>Planejar — contexto, liderança, risco</li>
+          <li data-r style="--d:4"><i style="background:var(--gold)"></i>Fazer — suporte & operação</li>
+          <li data-r style="--d:5"><i style="background:var(--ink)"></i>Verificar — avaliação de desempenho</li>
+          <li data-r style="--d:6"><i style="background:var(--blue-2)"></i>Agir — melhoria</li>
+        </ul>
+      </div>
+      <div class="pdca-fig" data-fade style="--d:2">
+        <svg viewBox="0 0 540 540" aria-hidden="true">
+          <g fill="var(--ink)" opacity=".28">
+            <rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(0 270 270)"/><rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(36 270 270)"/>
+            <rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(72 270 270)"/><rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(108 270 270)"/>
+            <rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(144 270 270)"/><rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(180 270 270)"/>
+            <rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(216 270 270)"/><rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(252 270 270)"/>
+            <rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(288 270 270)"/><rect x="266" y="150" width="8" height="20" rx="2" transform="rotate(324 270 270)"/>
+          </g>
+          <g fill="none" stroke-width="44" stroke-linecap="round">
+            <path d="M281.9 100.4 A170 170 0 0 1 439.6 258.1" stroke="var(--blue)"   pathLength="1" data-draw style="--d:1"/>
+            <path d="M439.6 281.9 A170 170 0 0 1 281.9 439.6" stroke="var(--gold)"   pathLength="1" data-draw style="--d:2"/>
+            <path d="M258.1 439.6 A170 170 0 0 1 100.4 281.9" stroke="var(--ink)" opacity=".85" pathLength="1" data-draw style="--d:3"/>
+            <path d="M100.4 258.1 A170 170 0 0 1 258.1 100.4" stroke="var(--blue-2)" pathLength="1" data-draw style="--d:4"/>
+          </g>
+          <g text-anchor="middle">
+            <g data-pop style="--d:4"><text class="fs" x="429" y="122" font-size="44" fill="#31567e">P</text><text x="429" y="144" font-size="10.5" letter-spacing="1.5" fill="var(--ink-faint)">CLÁUSULA 4–6</text></g>
+            <g data-pop style="--d:5"><text class="fs" x="429" y="440" font-size="44" fill="#a8853f">D</text><text x="429" y="462" font-size="10.5" letter-spacing="1.5" fill="var(--ink-faint)">CLÁUSULA 7–8</text></g>
+            <g data-pop style="--d:6"><text class="fs" x="111" y="440" font-size="44" fill="var(--ink)">C</text><text x="111" y="462" font-size="10.5" letter-spacing="1.5" fill="var(--ink-faint)">CLÁUSULA 9</text></g>
+            <g data-pop style="--d:7"><text class="fs" x="111" y="122" font-size="44" fill="#6e93bd">A</text><text x="111" y="144" font-size="10.5" letter-spacing="1.5" fill="var(--ink-faint)">CLÁUSULA 10</text></g>
+          </g>
+          <g data-pop style="--d:3">
+            <circle cx="270" cy="270" r="88" fill="var(--paper)" stroke="var(--line)" stroke-width="1.3"/>
+            <text class="fs" x="270" y="266" text-anchor="middle" font-size="30" fill="var(--ink)">SGSI</text>
+            <text x="270" y="292" text-anchor="middle" font-size="9.5" letter-spacing="1.8" fill="var(--ink-faint)">MELHORIA CONTÍNUA</text>
+          </g>
+          <circle r="4" fill="var(--gold)" opacity=".95">
+            <animateMotion dur="14s" repeatCount="indefinite" path="M270 100 A170 170 0 1 1 269.99 100"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 6 · RISCO -->
+  <section class="stage"><div class="slide s-risk spine-l">
+    <div class="spine" aria-hidden="true">
+      <div class="ph" style="background-image:url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=700&q=75')"></div>
+      <span class="plate">Placa 03 · O cenário de ameaças</span>
+    </div>
+    <div class="content risk-grid">
+      <div>
+        <div class="kicker" data-r style="--d:0">05 — Risco como moeda comum</div>
+        <h2 class="display" data-r style="--d:1">Risco, falado<br>da mesma forma.</h2>
+        <p class="body" data-r style="--d:2">Um vocabulário compartilhado torna o risco comparável entre fronteiras e salas de diretoria. O método da família é deliberadamente simples: identificar o que deve proteger, pesar o que ameaça e onde está exposto — então escolher, deliberadamente, o que fazer a respeito.</p>
+      </div>
+      <div class="risk-fig" data-fade style="--d:2">
+        <svg viewBox="0 0 660 470" aria-hidden="true">
+          <g text-anchor="middle" font-size="13" fill="var(--ink)">
+            <g data-pop style="--d:1"><rect x="28"  y="54" width="140" height="52" rx="10" fill="var(--paper)" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1.3"/><text x="98" y="86">ATIVOS</text></g>
+            <text x="198" y="88" font-size="20" fill="var(--gold)" data-pop style="--d:2">×</text>
+            <g data-pop style="--d:2"><rect x="216" y="54" width="140" height="52" rx="10" fill="var(--paper)" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1.3"/><text x="286" y="86">AMEAÇAS</text></g>
+            <text x="394" y="88" font-size="20" fill="var(--gold)" data-pop style="--d:3">×</text>
+            <g data-pop style="--d:3"><rect x="412" y="54" width="220" height="52" rx="10" fill="var(--paper)" stroke="var(--ink)" stroke-opacity=".45" stroke-width="1.3"/><text x="522" y="86">VULNERABILIDADES</text></g>
+          </g>
+          <g stroke="var(--ink)" stroke-width="1.4" fill="none" opacity=".7">
+            <path d="M330 110 V146" data-draw style="--d:4"/>
+            <path d="M323 138 L330 150 L337 138" data-draw style="--d:4"/>
+          </g>
+          <g data-pop style="--d:5">
+            <rect x="200" y="164" width="260" height="80" rx="12" fill="var(--gold)" fill-opacity=".07" stroke="var(--gold)" stroke-width="2"/>
+            <text class="fs" x="330" y="204" text-anchor="middle" font-size="32" fill="var(--ink)">RISCO</text>
+            <text x="330" y="228" text-anchor="middle" font-size="11" letter-spacing="1" fill="var(--gold-deep)">= PROBABILIDADE × IMPACTO</text>
+          </g>
+          <g stroke="var(--ink)" stroke-width="1.4" fill="none" opacity=".7">
+            <path d="M330 248 V284" data-draw style="--d:6"/>
+            <path d="M323 276 L330 288 L337 276" data-draw style="--d:6"/>
+          </g>
+          <g text-anchor="middle" font-size="12.5" fill="var(--ink)">
+            <g data-pop style="--d:7"><rect x="28"  y="300" width="140" height="46" rx="23" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.4"/><text x="98"  y="328">MODIFICAR</text></g>
+            <g data-pop style="--d:8"><rect x="188" y="300" width="140" height="46" rx="23" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.4"/><text x="258" y="328">RETER</text></g>
+            <g data-pop style="--d:9"><rect x="348" y="300" width="140" height="46" rx="23" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.4"/><text x="418" y="328">EVITAR</text></g>
+            <g data-pop style="--d:10"><rect x="508" y="300" width="124" height="46" rx="23" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.4"/><text x="570" y="328">COMPARTILHAR</text></g>
+          </g>
+          <g text-anchor="middle" font-size="10" fill="var(--ink)" opacity=".5">
+            <text x="98"  y="370" data-fade style="--d:8">aplicar controles</text>
+            <text x="258" y="370" data-fade style="--d:9">aceitar conscientemente</text>
+            <text x="418" y="370" data-fade style="--d:10">parar a atividade</text>
+            <text x="570" y="370" data-fade style="--d:11">segurar · contrato</text>
+          </g>
+          <text x="330" y="440" text-anchor="middle" font-size="11" letter-spacing="2" fill="var(--ink)" opacity=".5" data-fade style="--d:11">ISO/IEC 27005 — O PLAYBOOK DE RISCOS DA FAMÍLIA</text>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 7 · ANEXO A -->
+  <section class="stage"><div class="slide s-annex">
+    <div class="content a-grid">
+      <div>
+        <div class="kicker" data-r style="--d:0">06 — O catálogo de controles</div>
+        <h2 class="display" data-r style="--d:1">93 controles.<br>Quatro temas.</h2>
+        <p class="body" data-r style="--d:2">O Anexo A reúne os controles dos quais um SGSI pode se valer; a <b>ISO/IEC 27002</b> explica como implementar cada um. Um catálogo compartilhado — atualizado em 2022 para nuvem, inteligência de ameaças e a forma como as pessoas realmente trabalham hoje.</p>
+      </div>
+      <div class="a-right">
+        <div class="donut" data-fade style="--d:2">
+          <svg viewBox="0 0 440 440" aria-hidden="true">
+            <g transform="rotate(-90 220 220)" fill="none" stroke-width="42">
+              <circle class="seg" cx="220" cy="220" r="118" stroke="var(--blue)"   pathLength="100" stroke-dashoffset="0"     style="--seg:38.5 61.5;--d:0"/>
+              <circle class="seg" cx="220" cy="220" r="118" stroke="var(--blue-2)" pathLength="100" stroke-dashoffset="-39.31" style="--seg:35.4 64.6;--d:1"/>
+              <circle class="seg" cx="220" cy="220" r="118" stroke="var(--gold)"   pathLength="100" stroke-dashoffset="-75.5"  style="--seg:14.6 85.4;--d:2"/>
+              <circle class="seg" cx="220" cy="220" r="118" stroke="var(--ink)"    pathLength="100" stroke-dashoffset="-90.87" style="--seg:8.3 91.7;--d:3"/>
+            </g>
+            <g data-pop style="--d:4">
+              <text class="fs" x="220" y="238" text-anchor="middle" font-size="64" fill="var(--ink)" data-count="93">0</text>
+              <text x="220" y="266" text-anchor="middle" font-size="10.5" letter-spacing="2.5" fill="var(--ink-faint)">CONTROLES</text>
+            </g>
+          </svg>
+        </div>
+        <div class="a-legend">
+          <div class="a-row" data-r style="--d:3"><span class="nm"><i style="background:var(--blue)"></i>Organizacionais<span class="ds">políticas, papéis, fornecedores, nuvem</span></span><span class="ct">37</span></div>
+          <div class="a-row" data-r style="--d:4"><span class="nm"><i style="background:var(--blue-2)"></i>Tecnológicos<span class="ds">criptografia, acesso, dev seguro</span></span><span class="ct">34</span></div>
+          <div class="a-row" data-r style="--d:5"><span class="nm"><i style="background:var(--gold)"></i>Físicos<span class="ds">perímetros, equipamentos, mesas</span></span><span class="ct">14</span></div>
+          <div class="a-row" data-r style="--d:6"><span class="nm"><i style="background:var(--ink)"></i>Pessoas<span class="ds">triagem, conscientização, remoto</span></span><span class="ct">8</span></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 8 · JORNADA -->
+  <section class="stage"><div class="slide s-journey spine-r">
+    <div class="spine" aria-hidden="true">
+      <div class="ph" style="background-image:url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=700&q=75')"></div>
+      <span class="plate">Placa 04 · O trabalho</span>
+    </div>
+    <div class="content">
+      <div class="kicker" data-r style="--d:0">07 — Das palavras ao certificado</div>
+      <h2 class="display" data-r style="--d:1">O caminho até <em>certificado.</em></h2>
+      <p class="body" data-r style="--d:2">Entre a primeira análise de lacunas e o certificado estão meses de definição de escopo, trabalho de controle e evidências — e após ele, um ciclo de três anos de auditorias de vigilância que mantém o sistema honesto.</p>
+      <div class="timeline" data-fade style="--d:3">
+        <svg viewBox="0 0 980 250" aria-hidden="true">
+          <path id="road" d="M40 150 C 100 150 155 95 215 95 S 330 140 390 140 S 505 85 565 85 S 680 135 740 135 S 860 75 920 75"
+                fill="none" stroke="var(--blue)" stroke-width="1.8" pathLength="1" data-draw style="--d:1"/>
+          <circle r="5.5" fill="var(--gold)" opacity=".95">
+            <animateMotion dur="10s" repeatCount="indefinite" path="M40 150 C 100 150 155 95 215 95 S 330 140 390 140 S 505 85 565 85 S 680 135 740 135 S 860 75 920 75"/>
+          </circle>
+          <g text-anchor="middle" font-size="13.5" fill="var(--ink)">
+            <g data-pop style="--d:2"><circle cx="40" cy="150" r="7" fill="var(--paper)" stroke="var(--blue)" stroke-width="2"/><circle cx="40" cy="150" r="2.4" fill="var(--blue)"/>
+              <text x="40" y="186">Análise de lacunas</text><text x="40" y="203" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">01</text></g>
+            <g data-pop style="--d:3"><circle cx="215" cy="95" r="7" fill="var(--paper)" stroke="var(--blue)" stroke-width="2"/><circle cx="215" cy="95" r="2.4" fill="var(--blue)"/>
+              <text x="215" y="65">Escopo & política do SGSI</text><text x="215" y="48" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">02</text></g>
+            <g data-pop style="--d:4"><circle cx="390" cy="140" r="7" fill="var(--paper)" stroke="var(--blue)" stroke-width="2"/><circle cx="390" cy="140" r="2.4" fill="var(--blue)"/>
+              <text x="390" y="176">Implementar & operar</text><text x="390" y="193" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">03</text></g>
+            <g data-pop style="--d:5"><circle cx="565" cy="85" r="7" fill="var(--paper)" stroke="var(--blue)" stroke-width="2"/><circle cx="565" cy="85" r="2.4" fill="var(--blue)"/>
+              <text x="565" y="55">Auditoria interna</text><text x="565" y="38" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">04</text></g>
+            <g data-pop style="--d:6"><circle cx="740" cy="135" r="7" fill="var(--paper)" stroke="var(--blue)" stroke-width="2"/><circle cx="740" cy="135" r="2.4" fill="var(--blue)"/>
+              <text x="740" y="171">Etapa 1 & 2 da auditoria</text><text x="740" y="188" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">05</text></g>
+            <g data-pop style="--d:7"><circle cx="920" cy="75" r="7" fill="var(--paper)" stroke="var(--gold)" stroke-width="2"/><circle cx="920" cy="75" r="2.4" fill="var(--gold)"/>
+              <text x="952" y="45" text-anchor="end">Vigilância & recertificação</text><text x="952" y="28" text-anchor="end" font-size="10.5" fill="var(--gold-deep)" letter-spacing="1.5">06</text></g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 9 · ALCANCE -->
+  <section class="stage"><div class="slide s-reach dark">
+    <div class="bg" aria-hidden="true">
+      <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1800&q=80" alt="" loading="lazy" decoding="async">
+    </div>
+    <div class="content">
+      <div class="kicker" data-r style="--d:0">08 — O alcance</div>
+      <div class="stats">
+        <div class="stat" data-r style="--d:1">
+          <div class="stat-num"><span data-count="40">0</span><span class="suf">+</span></div>
+          <div class="stat-lbl">padrões interligados<br>na família</div>
+        </div>
+        <div class="stat" data-r style="--d:2">
+          <div class="stat-num"><span data-count="70000" data-format="group">0</span><span class="suf">+</span></div>
+          <div class="stat-lbl">organizações certificadas<br>pelo mundo · Levantamento ISO 2022</div>
+        </div>
+        <div class="stat" data-r style="--d:3">
+          <div class="stat-num"><span data-count="150">0</span><span class="suf">+</span></div>
+          <div class="stat-lbl">países lendo<br>as mesmas palavras</div>
+        </div>
+      </div>
+      <p class="closing" data-r style="--d:4">Um certificado, reconhecido em todo lugar — <em>confiança que viaja sem tradução.</em></p>
+    </div>
+  </div></section>
+
+  <!-- 10 · FECHAR -->
+  <section class="stage"><div class="slide s-close dark">
+    <div class="bg" aria-hidden="true">
+      <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1800&q=80" alt="" loading="lazy" decoding="async">
+    </div>
+    <div class="deco-ring tr"><svg viewBox="0 0 100 100"><g class="spin-slow" style="transform-box:view-box;transform-origin:center"><circle cx="50" cy="50" r="48" fill="none" stroke="var(--gold)" stroke-width=".7" stroke-dasharray="1.5 4" opacity=".55"/></g></svg></div>
+    <div class="deco-ring bl"><svg viewBox="0 0 100 100"><g class="spin-rev" style="transform-box:view-box;transform-origin:center"><circle cx="50" cy="50" r="48" fill="none" stroke="var(--blue)" stroke-width=".7" stroke-dasharray="1.5 4" opacity=".45"/></g></svg></div>
+    <div class="content">
+      <div class="close-mark" data-r style="--d:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2l8 3.2v6.3c0 5.2-3.4 8.4-8 10.5-4.6-2.1-8-5.3-8-10.5V5.2z"/><path d="M8.6 12l2.4 2.4 4.6-5"/></svg>
+      </div>
+      <h2 class="display" data-r style="--d:1">Fale segurança —<br><em>fluente, em todo lugar.</em></h2>
+      <p class="close-sub" data-r style="--d:2">Obrigado.</p>
+      <div class="close-keys" data-r style="--d:3">
+        <span><kbd>←</kbd> anterior</span><span><kbd>→</kbd> próximo</span><span><kbd>Home</kbd> reiniciar</span><span><kbd>ESC</kbd> visão geral</span>
+      </div>
+      <p class="fineprint" data-r style="--d:4">Uma visão educacional independente da família ISO/IEC 27000. Os padrões publicados permanecem o único texto autorizado; a implementação deve sempre ser adaptada ao contexto da sua organização e aos requisitos aplicáveis.</p>
+    </div>
+  </div></section>
+
+</main>
+
+<!-- ESC · visão geral -->
+<div class="overview" id="ov" aria-hidden="true">
+  <div class="ov-head">
+    <div class="t">Visão geral do deck</div>
+    <div class="h">↑ ↓ ← → selecionar · Enter abrir · ESC retornar</div>
+  </div>
+  <div class="ov-grid" id="ovGrid"></div>
+</div>
+
+<script>
+(function(){
+  const deck   = document.getElementById('deck');
+  const slides = [...deck.querySelectorAll('.slide')];
+  const N      = slides.length;
+  const dotsBox= document.getElementById('dots');
+  const prog   = document.getElementById('progFill');
+  const cCur   = document.getElementById('cCur');
+  document.getElementById('cTot').textContent = String(N).padStart(2,'0');
+
+  let idx = 0, tick = false;
+
+  /* ---- injetar chrome por slide + construir navegação de pontos ---- */
+  slides.forEach((s,i)=>{
+    const nn = String(i+1).padStart(2,'0');
+    s.insertAdjacentHTML('beforeend',
+      `<div class="marks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+       <footer class="sfoot"><span>ISO/IEC 27000 — a linguagem universal da segurança da informação</span><span>${nn} / ${String(N).padStart(2,'0')}</span></footer>`);
+    const d = document.createElement('button');
+    d.type='button'; d.className='dot'; d.setAttribute('aria-label','Ir para slide '+nn);
+    d.addEventListener('click',()=>go(i));
+    dotsBox.appendChild(d);
+  });
+  const dots = [...dotsBox.children];
+
+  /* ---- contar números ---- */
+  function runCounts(scope){
+    scope.querySelectorAll('[data-count]').forEach(el=>{
+      clearTimeout(el._t); cancelAnimationFrame(el._raf);
+      const target = parseFloat(el.dataset.count);
+      const grp    = el.dataset.format === 'group';
+      const t0 = performance.now();
+      const step = t => {
+        const p = Math.min(1,(t-t0)/1400), e = 1-Math.pow(1-p,3);
+        const v = Math.round(target*e);
+        el.textContent = grp ? v.toLocaleString('pt-BR') : String(v);
+        if(p<1) el._raf = requestAnimationFrame(step);
+      };
+      el._t = setTimeout(()=>{ el._raf = requestAnimationFrame(step); }, 450);
+    });
+  }
+  function resetCounts(scope){
+    scope.querySelectorAll('[data-count]').forEach(el=>{
+      clearTimeout(el._t); cancelAnimationFrame(el._raf); el.textContent='0';
+    });
+  }
+
+  /* ---- navegação ---- */
+  function setIdx(i){
+    idx = i;
+    slides.forEach((s,k)=>{
+      if(k===i){ s.classList.add('is-in'); runCounts(s); }
+      else     { s.classList.remove('is-in'); resetCounts(s); }
+    });
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    cCur.textContent = String(i+1).padStart(2,'0');
+  }
+  function go(i){
+    if(i<0){ if(idx===0) toast('Início do deck'); i=0; }
+    if(i>N-1){ if(idx===N-1) toast('Fim do deck — pressione Home para reiniciar'); i=N-1; }
+    setIdx(i);
+    deck.scrollTo({top:i*deck.clientHeight, behavior:'smooth'});
+  }
+
+  deck.addEventListener('scroll',()=>{
+    if(!tick){ tick=true; requestAnimationFrame(()=>{
+      tick=false;
+      const i = Math.max(0, Math.min(N-1, Math.round(deck.scrollTop/deck.clientHeight)));
+      if(i!==idx) setIdx(i);
+      prog.style.width = (deck.scrollTop/(deck.scrollHeight-deck.clientHeight)*100)+'%';
+    });}
+  },{passive:true});
+
+  addEventListener('resize',()=>{
+    deck.scrollTop = idx*deck.clientHeight;
+    if(ovOpen) scaleThumbs();
+  });
+
+  /* ---- toast ---- */
+  const toastEl = document.getElementById('toast'); let tt;
+  function toast(msg, ms=2400){
+    toastEl.textContent = msg; toastEl.classList.add('on');
+    clearTimeout(tt); tt = setTimeout(()=>toastEl.classList.remove('on'), ms);
+  }
+
+  /* ---- ESC · visão geral (miniaturas ao vivo, controladas por teclado) ---- */
+  const ov = document.getElementById('ov'), ovGrid = document.getElementById('ovGrid');
+  const ovCaps = ['Capa — ISO/IEC 27000','O consenso global','A linguagem universal','Uma família, muitos padrões',
+                  'O motor: SGSI & PDCA','Risco como moeda comum','O catálogo de controles','O caminho até certificado',
+                  'O alcance','Fechar'];
+  let ovOpen=false, ovSel=0, ovBuilt=false;
+
+  function buildOv(){
+    ovGrid.innerHTML='';
+    slides.forEach((s,i)=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='ov-cell';
+      b.innerHTML=`<span class="ov-num">${String(i+1).padStart(2,'0')}</span>
+                   <span class="ov-frame"><span class="ov-scale"></span></span>
+                   <span class="ov-cap">${ovCaps[i]}</span>`;
+      const clone = s.cloneNode(true);
+      clone.classList.add('is-in');                 // renderizar no estado final revelado
+      clone.style.width='1280px';
+      clone.setAttribute('aria-hidden','true');
+      b.querySelector('.ov-scale').appendChild(clone);
+      b.addEventListener('click',()=>{ closeOv(); go(i); });
+      ovGrid.appendChild(b);
+    });
+    ovBuilt=true; scaleThumbs();
+  }
+  function scaleThumbs(){
+    ovGrid.querySelectorAll('.ov-scale').forEach(el=>{
+      el.style.transform = `scale(${el.parentElement.clientWidth/1280})`;
+    });
+  }
+  function selOv(){
+    [...ovGrid.children].forEach((c,i)=>c.classList.toggle('sel',i===ovSel));
+    const c = ovGrid.children[ovSel];
+    if(c){ c.focus({preventScroll:true}); c.scrollIntoView({block:'nearest'}); }
+  }
+  function openOv(){
+    if(!ovBuilt) buildOv();
+    ovSel=idx; ovOpen=true;
+    document.body.classList.add('ov-open');
+    ov.setAttribute('aria-hidden','false');
+    ov.classList.add('show'); selOv();
+  }
+  function closeOv(){
+    ovOpen=false;
+    document.body.classList.remove('ov-open');
+    ov.classList.remove('show');
+    ov.setAttribute('aria-hidden','true');
+  }
+  function ovKeys(e){
+    const cells=[...ovGrid.children]; if(!cells.length) return;
+    if(e.key==='Escape'){ e.preventDefault(); closeOv(); return; }
+    if(e.key==='Enter'){ e.preventDefault(); cells[ovSel].click(); return; }
+    const cols = cells.filter(c=>c.offsetTop===cells[0].offsetTop).length || 1;
+    let n=null;
+    if(e.key==='ArrowRight') n=ovSel+1;
+    if(e.key==='ArrowLeft')  n=ovSel-1;
+    if(e.key==='ArrowDown')  n=ovSel+cols;
+    if(e.key==='ArrowUp')    n=ovSel-cols;
+    if(n===null) return;
+    e.preventDefault();
+    ovSel=Math.max(0,Math.min(cells.length-1,n)); selOv();
+  }
+
+  /* ---- teclado ---- */
+  addEventListener('keydown', e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    if(ovOpen){ ovKeys(e); return; }
+    const k=e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||k===' '){ e.preventDefault(); go(idx+1); }
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'){ e.preventDefault(); go(idx-1); }
+    else if(k==='Home'){ e.preventDefault(); go(0); }
+    else if(k==='End'){ e.preventDefault(); go(N-1); }
+    else if(k==='Escape'){ openOv(); }
+    else if(/^[0-9]$/.test(k)){ const n = k==='0'?10:+k; if(n<=N) go(n-1); }
+  });
+
+  document.getElementById('prevB').addEventListener('click',()=>go(idx-1));
+  document.getElementById('nextB').addEventListener('click',()=>go(idx+1));
+
+  /* ---- figura: mapa familiar — clique em um nó para ler seu papel ---- */
+  const cap  = slides[3].querySelector('#nodeCap');
+  const code = slides[3].querySelector('#ncCode');
+  const text = slides[3].querySelector('#ncText');
+  slides[3].querySelectorAll('.sat').forEach(g=>{
+    g.addEventListener('click',()=>{
+      cap.classList.add('swap');
+      setTimeout(()=>{
+        code.textContent = g.dataset.code;
+        text.textContent = g.dataset.full;
+        cap.classList.remove('swap');
+      },200);
+    });
+  });
+
+  /* ---- figura: Venn CIA ↔ termos de definição ---- */
+  const terms = slides[2].querySelectorAll('.term');
+  const vgs   = slides[2].querySelectorAll('.venn-g');
+  function setV(v,on){
+    vgs.forEach(g=>g.classList.toggle('hot', on && g.dataset.v===v));
+    terms.forEach(t=>t.classList.toggle('hot', on && t.dataset.term===v));
+  }
+  terms.forEach(t=>{
+    t.addEventListener('mouseenter',()=>setV(t.dataset.term,true));
+    t.addEventListener('mouseleave',()=>setV(t.dataset.term,false));
+  });
+  vgs.forEach(g=>{
+    g.addEventListener('mouseenter',()=>setV(g.dataset.v,true));
+    g.addEventListener('mouseleave',()=>setV(g.dataset.v,false));
+  });
+
+  /* ---- inicialização ---- */
+  requestAnimationFrame(()=>{
+    setIdx(0);
+    setTimeout(()=>toast('← → para navegar · ESC para visão geral',4200), 800);
+  });
+})();
+</script>
+</body>
+</html>
