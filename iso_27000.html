@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport content="width=device-width, initial-scale=1">
+<title>A Família de Normas ISO/IEC 27000 — Artigo Acadêmico (ABNT)</title>
+<style>
+/* ================= FORMATAÇÃO ABNT / A4 ================= */
+@page { size: A4; margin: 3cm 2cm 2cm 3cm; } /* superior/esquerda 3cm, inferior/direita 2cm */
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+body {
+  margin: 0;
+  background: #525659;               /* fundo apenas para visualização em tela */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12pt;                    /* fonte 12 */
+  line-height: 1.5;                   /* espaçamento 1,5 */
+  color: #000;
+}
+
+/* Folha A4 */
+.page {
+  width: 21cm;
+  min-height: 29.7cm;
+  background: #fff;
+  margin: 0 auto 0.5cm auto;
+  padding: 3cm 2cm 2cm 3cm;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  break-after: page;
+  page-break-after: always;
+}
+.page:last-of-type { break-after: auto; page-break-after: auto; }
+
+/* Número de página (ABNT: agora no RODAPÉ, canto superior direito da área de texto? 
+   Na verdade, ABNT pede canto superior direito, mas você pediu rodapé.
+   Vou posicionar no canto inferior direito da página, dentro da margem de 2cm. */
+.pnum { 
+  position: absolute; 
+  bottom: 1cm;       /* Distância do rodapé */
+  right: 2cm;        /* Alinhamento à direita (dentro da margem direita de 2cm) */
+  font-size: 12pt; 
+  line-height: 1; 
+  z-index: 10;
+}
+
+/* Texto */
+p { margin: 0; text-indent: 1.25cm; text-align: justify; orphans: 2; widows: 2; }
+
+/* Citações longas: recuo 4cm, fonte 10, espaço simples */
+.citacao { margin: 0.65cm 0 0.65cm 4cm; font-size: 10pt; line-height: 1; text-align: justify; }
+
+/* Títulos de seção (NBR 6024) */
+h1.sec { font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 0 0 0.65cm 0; text-align: left; }
+h2.sec { font-size: 12pt; font-weight: normal; text-transform: uppercase; margin: 0.65cm 0 0.4cm 0; }
+h1.pre { font-size: 12pt; font-weight: bold; text-transform: uppercase; text-align: center; margin: 0 0 0.65cm 0; }
+
+/* Resumo e Abstract: espaço simples, sem recuo */
+.resumo { text-indent: 0; line-height: 1; margin-bottom: 0.65cm; }
+.en { font-style: italic; }
+
+/* Referências (NBR 6023) */
+.refs p { text-indent: 0; text-align: left; line-height: 1; margin-bottom: 0.65cm; }
+
+/* ====== SUMÁRIO E LISTA DE QUADROS — formato grid ====== */
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  align-items: baseline;
+  margin: 0.12cm 0;
+  page-break-inside: avoid;
+}
+.item .titulo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item .pagina { min-width: 18px; text-align: right; white-space: nowrap; }
+
+.nivel-1 { margin-top: 0.45cm; }
+.nivel-1 .titulo { font-weight: 700; text-transform: uppercase; }
+.nivel-2 .titulo { padding-left: 0.55cm; }
+.nivel-3 .titulo { padding-left: 1.1cm; }
+
+/* ====== QUADRO (tabela ABNT, bordas fechadas) ====== */
+.quadro-lbl { text-align: center; margin-bottom: 0.25cm; }
+.quadro { width: 100%; border-collapse: collapse; line-height: 1.15; }
+.quadro th, .quadro td { border: 1px solid #000; padding: 3pt 6pt; text-align: left; vertical-align: top; }
+.quadro th { text-align: center; font-weight: bold; }
+.fonte { font-size: 10pt; text-align: center; margin-top: 0.25cm; }
+
+/* Lista de siglas */
+.sig-row { display: flex; margin-bottom: 7pt; }
+.sig-row .sig { flex: none; width: 3.5cm; }
+
+/* Capa / folha de rosto */
+.centro { text-align: center; }
+.negrito { font-weight: bold; }
+.push-bottom { margin-top: auto; }
+
+/* Botão (não sai na impressão) */
+.toolbar { position: fixed; right: 16px; bottom: 16px; z-index: 50; }
+.toolbar button {
+  background: #0b5cff; color: #fff; border: 0; padding: 12px 18px; border-radius: 8px;
+  font: 600 14px Arial, sans-serif; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+/* Impressão */
+@media print {
+  body { background: #fff; }
+  .page { width: auto; min-height: 24.5cm; margin: 0; padding: 0; box-shadow: none; }
+  .toolbar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== CAPA ===================== -->
+<div class="page">
+  <!-- Sem número na capa -->
+  <div class="centro">
+    UNIVERSIDADE EXEMPLO<br>
+    PRÓ-REITORIA DE GRADUAÇÃO<br>
+    CURSO DE SISTEMAS DE INFORMAÇÃO
+  </div>
+  <div class="centro" style="margin-top:4cm;">MARIA EDUARDA COSTA OLIVEIRA</div>
+  <div class="centro negrito" style="margin-top:4.5cm;">
+    A FAMÍLIA DE NORMAS ISO/IEC 27000:<br>
+    GESTÃO DE SEGURANÇA DA INFORMAÇÃO NAS ORGANIZAÇÕES
+  </div>
+  <div class="centro push-bottom">São Paulo – SP<br>2025</div>
+</div>
+
+<!-- ===================== FOLHA DE ROSTO ===================== -->
+<div class="page">
+  <!-- Sem número na folha de rosto -->
+  <div class="centro">MARIA EDUARDA COSTA OLIVEIRA</div>
+  <div class="centro negrito" style="margin-top:3.5cm;">
+    A FAMÍLIA DE NORMAS ISO/IEC 27000:<br>
+    GESTÃO DE SEGURANÇA DA INFORMAÇÃO NAS ORGANIZAÇÕES
+  </div>
+  <div style="margin-top:auto; margin-left:6cm; text-align:justify; line-height:1.15;">
+    Artigo científico apresentado ao Curso de Sistemas de Informação da Universidade Exemplo,
+    como requisito parcial para a aprovação na disciplina Metodologia da Pesquisa Científica.
+  </div>
+  <div style="margin-left:6cm; margin-top:0.5cm; line-height:1.15;">
+    Orientadora: Prof.ª Dr.ª Helena Martins Ribeiro
+  </div>
+  <div class="centro push-bottom">São Paulo – SP<br>2025</div>
+</div>
+
+<!-- ===================== RESUMO ===================== -->
+<div class="page">
+  <!-- Sem número no resumo (contagem começa na introdução) -->
+  <h1 class="pre">RESUMO</h1>
+  <p class="resumo">
+    O presente artigo tem por objetivo analisar a família de normas internacionais ISO/IEC 27000 e sua
+    contribuição para a gestão da segurança da informação nas organizações. Diante do crescente volume de
+    dados tratados pelos negócios digitais e da elevação do número de incidentes cibernéticos, torna-se
+    necessária a adoção de sistemas de gestão estruturados, capazes de proteger a confidencialidade, a
+    integridade e a disponibilidade das informações. A pesquisa, de natureza básica, com abordagem
+    qualitativa e caráter descritivo, desenvolvida por meio de levantamento bibliográfico e documental,
+    examinou as principais normas da família — em especial as ABNT NBR ISO/IEC 27000, 27001 e 27002 —, bem
+    como os fundamentos do Sistema de Gestão da Segurança da Informação (SGSI), baseado no ciclo de melhoria
+    contínua PDCA e na gestão de riscos. Os resultados indicam que a adoção da ISO/IEC 27001, única norma
+    certificável da família, proporciona às organizações maior maturidade em segurança, aderência a exigências
+    legais — incluindo a Lei Geral de Proteção de Dados (LGPD) —, vantagem competitiva e redução de riscos
+    operacionais. Conclui-se que a família ISO/IEC 27000 constitui referência essencial para o alinhamento
+    entre a segurança da informação e os objetivos estratégicos organizacionais.
+  </p>
+  <p class="resumo"><b>Palavras-chave:</b> Segurança da informação. ISO/IEC 27001. SGSI. Gestão de riscos. Normas técnicas.</p>
+</div>
+
+<!-- ===================== ABSTRACT ===================== -->
+<div class="page">
+  <h1 class="pre">ABSTRACT</h1>
+  <p class="resumo en">
+    This article aims to analyze the ISO/IEC 27000 family of international standards and its contribution to
+    information security management in organizations. Given the growing volume of data processed by digital
+    businesses and the increase in cyber incidents, the adoption of structured management systems capable of
+    protecting the confidentiality, integrity and availability of information becomes necessary. This basic,
+    qualitative, descriptive and bibliographic research examined the main standards of the family — especially
+    ABNT NBR ISO/IEC 27000, 27001 and 27002 — as well as the foundations of the Information Security Management
+    System (ISMS), based on the PDCA continuous improvement cycle and on risk management. The results indicate
+    that the adoption of ISO/IEC 27001, the only certifiable standard of the family, provides organizations
+    with greater security maturity, legal compliance — including the Brazilian General Data Protection Law
+    (LGPD) —, competitive advantage and reduction of operational risks. It is concluded that the ISO/IEC 27000
+    family is an essential reference for aligning information security with the organizations' strategic
+    objectives.
+  </p>
+  <p class="resumo en"><b>Keywords:</b> Information security. ISO/IEC 27001. ISMS. Risk management. Technical standards.</p>
+</div>
+
+<!-- ===================== LISTA DE QUADROS ===================== -->
+<div class="page">
+  <h1 class="pre">LISTA DE QUADROS</h1>
+  <div class="item nivel-1"><span class="titulo">QUADRO 1 – Principais normas da família ABNT NBR ISO/IEC 27000</span><span class="pagina">10</span></div>
+</div>
+
+<!-- ===================== LISTA DE ABREVIATURAS E SIGLAS ===================== -->
+<div class="page">
+  <h1 class="pre">LISTA DE ABREVIATURAS E SIGLAS</h1>
+  <div class="sig-row"><span class="sig">ABNT</span><span>Associação Brasileira de Normas Técnicas</span></div>
+  <div class="sig-row"><span class="sig">CIA</span><span>Confidencialidade, Integridade e Disponibilidade</span></div>
+  <div class="sig-row"><span class="sig">GDPR</span><span>General Data Protection Regulation (Regulamento Geral de Proteção de Dados)</span></div>
+  <div class="sig-row"><span class="sig">IEC</span><span>International Electrotechnical Commission (Comissão Eletrotécnica Internacional)</span></div>
+  <div class="sig-row"><span class="sig">ISO</span><span>International Organization for Standardization (Organização Internacional de Padronização)</span></div>
+  <div class="sig-row"><span class="sig">LGPD</span><span>Lei Geral de Proteção de Dados Pessoais</span></div>
+  <div class="sig-row"><span class="sig">NBR</span><span>Norma Brasileira</span></div>
+  <div class="sig-row"><span class="sig">PDCA</span><span>Plan-Do-Check-Act (Planejar-Fazer-Verificar-Agir)</span></div>
+  <div class="sig-row"><span class="sig">SGSI</span><span>Sistema de Gestão da Segurança da Informação</span></div>
+  <div class="sig-row"><span class="sig">SoA</span><span>Statement of Applicability (Declaração de Aplicabilidade)</span></div>
+  <div class="sig-row"><span class="sig">TIC</span><span>Tecnologias de Informação e Comunicação</span></div>
+</div>
+
+<!-- ===================== SUMÁRIO ===================== -->
+<div class="page">
+  <h1 class="pre">SUMÁRIO</h1>
+
+  <div class="item nivel-1"><span class="titulo">1 INTRODUÇÃO</span><span class="pagina">7</span></div>
+
+  <div class="item nivel-1"><span class="titulo">2 SEGURANÇA DA INFORMAÇÃO: CONCEITOS FUNDAMENTAIS</span><span class="pagina">8</span></div>
+  <div class="item nivel-2"><span class="titulo">2.1 Confidencialidade, Integridade e Disponibilidade</span><span class="pagina">8</span></div>
+  <div class="item nivel-2"><span class="titulo">2.2 Ameaças e Vulnerabilidades</span><span class="pagina">9</span></div>
+
+  <div class="item nivel-1"><span class="titulo">3 A FAMÍLIA DE NORMAS ISO/IEC 27000</span><span class="pagina">10</span></div>
+  <div class="item nivel-2"><span class="titulo">3.1 ABNT NBR ISO/IEC 27000: Visão Geral e Vocabulário</span><span class="pagina">11</span></div>
+  <div class="item nivel-2"><span class="titulo">3.2 ABNT NBR ISO/IEC 27001: Requisitos do SGSI</span><span class="pagina">11</span></div>
+  <div class="item nivel-2"><span class="titulo">3.3 ABNT NBR ISO/IEC 27002: Controles de Segurança da Informação</span><span class="pagina">12</span></div>
+  <div class="item nivel-2"><span class="titulo">3.4 Outras Normas da Família ISO/IEC 27000</span><span class="pagina">13</span></div>
+
+  <div class="item nivel-1"><span class="titulo">4 O SISTEMA DE GESTÃO DA SEGURANÇA DA INFORMAÇÃO</span><span class="pagina">14</span></div>
+  <div class="item nivel-2"><span class="titulo">4.1 O Ciclo PDCA</span><span class="pagina">14</span></div>
+  <div class="item nivel-2"><span class="titulo">4.2 Gestão de Riscos de Segurança da Informação</span><span class="pagina">15</span></div>
+  <div class="item nivel-2"><span class="titulo">4.3 Certificação, Benefícios e Desafios</span><span class="pagina">15</span></div>
+
+  <div class="item nivel-1"><span class="titulo">5 CONSIDERAÇÕES FINAIS</span><span class="pagina">17</span></div>
+
+  <div class="item nivel-1"><span class="titulo">REFERÊNCIAS</span><span class="pagina">18</span></div>
+</div>
+
+<!-- ===================== 1 INTRODUÇÃO (pág. 7) ===================== -->
+<div class="page">
+  <div class="pnum">7</div>
+  <h1 class="sec">1 INTRODUÇÃO</h1>
+  <p>A informação constitui, na sociedade contemporânea, um dos ativos mais valiosos das organizações. A
+  transformação digital, a expansão do trabalho remoto, a computação em nuvem e a massificação das transações
+  eletrônicas ampliaram significativamente o volume de dados tratados pelas instituições e, ao mesmo tempo,
+  aumentaram a superfície de exposição a ameaças. Nesse cenário, a proteção da informação deixou de ser uma
+  preocupação restrita à área de tecnologia da informação e passou a integrar a agenda estratégica dos
+  negócios.</p>
+  <p>Incidentes como vazamentos de dados, ataques de ransomware, fraudes eletrônicas e indisponibilidade de
+  sistemas provocam prejuízos financeiros, danos reputacionais e sanções legais. No Brasil, a Lei nº 13.709,
+  de 14 de agosto de 2018, a Lei Geral de Proteção de Dados Pessoais (LGPD), estabeleceu obrigações rigorosas
+  para o tratamento de dados pessoais, exigindo das organizações a adoção de medidas técnicas e administrativas
+  capazes de garantir a proteção dos direitos dos titulares (BRASIL, 2018).</p>
+  <p>Nesse contexto, a família de normas internacionais ISO/IEC 27000, elaborada pelo comitê técnico conjunto
+  ISO/IEC JTC 1, subcomitê SC 27, e adotada no Brasil pela Associação Brasileira de Normas Técnicas (ABNT),
+  consolidou-se como principal referência mundial para a gestão da segurança da informação. Entre seus
+  documentos, destaca-se a ISO/IEC 27001, que especifica os requisitos para estabelecer, implementar, manter e
+  melhorar continuamente um Sistema de Gestão da Segurança da Informação (SGSI) (ABNT, 2022a).</p>
+  <p>O objetivo geral deste artigo é analisar a estrutura e o conteúdo da família de normas ISO/IEC 27000,
+  evidenciando sua contribuição para a proteção da informação nas organizações. Como objetivos específicos,
+  pretende-se: apresentar os conceitos fundamentais da segurança da informação; descrever as principais normas
+  da família, em especial as ABNT NBR ISO/IEC 27000, 27001 e 27002; e discutir os fundamentos, os benefícios e
+  os desafios da implementação de um SGSI.</p>
+  <p>Metodologicamente, trata-se de pesquisa básica, de abordagem qualitativa e caráter descritivo, desenvolvida
+  por meio de pesquisa bibliográfica e documental, tendo como fontes principais as próprias normas da família
+  27000 e a literatura nacional especializada. O trabalho está estruturado em quatro seções, além desta
+  introdução e das considerações finais.</p>
+</div>
+
+<!-- ===================== SEÇÃO 2 (pág. 8) ===================== -->
+<div class="page">
+  <div class="pnum">8</div>
+  <h1 class="sec">2 SEGURANÇA DA INFORMAÇÃO: CONCEITOS FUNDAMENTAIS</h1>
+  <p>A segurança da informação pode ser compreendida como o conjunto de medidas destinadas à proteção da
+  informação contra uma ampla variedade de ameaças, com a finalidade de assegurar a continuidade dos negócios,
+  minimizar as perdas e maximizar o retorno sobre os investimentos da organização (ABNT, 2019). Trata-se,
+  portanto, de um objetivo gerencial — e não apenas tecnológico —, que envolve pessoas, processos, recursos
+  tecnológicos e a própria informação.</p>
+  <p>Silva (2014) ressalta que a segurança da informação deve ser tratada como processo contínuo, e não como
+  produto ou solução pontual. Nesse sentido, a proteção eficaz de um ambiente exige a combinação harmônica de
+  mecanismos técnicos (firewalls, criptografia, antimalware), procedimentos formais (políticas, normas,
+  instruções de trabalho) e ações de conscientização dos usuários.</p>
+  <h2 class="sec">2.1 CONFIDENCIALIDADE, INTEGRIDADE E DISPONIBILIDADE</h2>
+  <p>A ABNT NBR ISO/IEC 27000 define três propriedades fundamentais da informação, conhecidas como tríade CIA:
+  confidencialidade, integridade e disponibilidade (ABNT, 2019).</p>
+  <p>A confidencialidade é a propriedade que garante que a informação não esteja disponível nem revelada a
+  indivíduos, entidades ou processos não autorizados. Para sua consecução, recorre-se a mecanismos como o
+  controle de acesso lógico e físico, a criptografia e a classificação da informação de acordo com seus níveis
+  de criticidade.</p>
+  <p>A integridade corresponde à propriedade de manter a exatidão e a completude do ativo informação,
+  assegurando que seus dados não tenham sido alterados de forma indevida, acidental ou intencional. Funções
+  hash, assinaturas digitais, controles de versão e trilhas de auditoria são exemplos de recursos empregados
+  para verificar e preservar a integridade das informações.</p>
+  <p>A disponibilidade, por sua vez, é a propriedade de garantir acesso e utilização da informação por usuários
+  autorizados sempre que necessário. Sua preservação depende de práticas como a redundância de infraestrutura,
+  os planos de continuidade de negócio, a proteção contra ataques de negação de serviço e a manutenção
+  preventiva dos sistemas.</p>
+</div>
+
+<!-- ===================== SEÇÃO 2.2 (pág. 9) ===================== -->
+<div class="page">
+  <div class="pnum">9</div>
+  <p>Além da tríade clássica, a norma ISO/IEC 27000 reconhece propriedades complementares, tais como a
+  autenticidade — que assegura que um usuário ou recurso é aquele que se declara — e a irretratabilidade (ou
+  não repúdio), que impede que uma entidade negue a autoria de uma ação realizada. Essas propriedades ampliam
+  o escopo da segurança, sendo especialmente relevantes em transações eletrônicas e em ambientes
+  jurídico-digitais (ABNT, 2019).</p>
+  <h2 class="sec">2.2 AMEAÇAS E VULNERABILIDADES</h2>
+  <p>No vocabulário da família 27000, ameaça é a causa potencial de um incidente, capaz de provocar danos a um
+  sistema ou à organização; vulnerabilidade é a fragilidade de um ativo que pode ser explorada por uma ou mais
+  ameaças; e risco é o efeito da incerteza sobre os objetivos, expresso pela combinação entre a probabilidade
+  de ocorrência de um evento e a severidade de suas consequências (ABNT, 2019).</p>
+  <p>As ameaças podem ser classificadas quanto à origem (externas ou internas), à natureza (físicas ou lógicas)
+  e à intencionalidade (deliberadas ou acidentais). Entre os exemplos mais frequentes estão o malware, os
+  ataques de ransomware, o phishing e a engenharia social, os erros operacionais, as falhas de hardware e
+  software e os desastres naturais.</p>
+  <p>Sêmola (2003) observa que o fator humano está presente na maioria dos incidentes de segurança, seja por
+  negligência, desconhecimento ou má-fé. Por isso, programas de educação e conscientização são considerados
+  mecanismos indispensáveis de controle, reduzindo a probabilidade de exploração de vulnerabilidades
+  comportamentais que os controles tecnológicos, isoladamente, não conseguem eliminar.</p>
+  <p>A identificação sistemática de ameaças e vulnerabilidades, com a avaliação da probabilidade e do impacto
+  associados, constitui a base do processo de gestão de riscos, detalhado na seção 4 deste artigo.</p>
+</div>
+
+<!-- ===================== SEÇÃO 3 + QUADRO 1 (pág. 10) ===================== -->
+<div class="page">
+  <div class="pnum">10</div>
+  <h1 class="sec">3 A FAMÍLIA DE NORMAS ISO/IEC 27000</h1>
+  <p>A família de normas ISO/IEC 27000 é um conjunto de normas voluntárias desenvolvido para ajudar as
+  organizações a manterem seus ativos de informação seguros. O escopo temático do subcomitê SC 27 abrange hoje
+  não apenas a segurança da informação, mas também a cibersegurança e a proteção da privacidade, refletindo a
+  convergência dessas disciplinas. No Brasil, as normas internacionais são adotadas como Normas Brasileiras
+  (ABNT NBR), por meio de processo de tradução e ratificação conduzido pela ABNT (ABNT, 2022a).</p>
+  <p>De modo geral, a família pode ser entendida como um sistema de documentos complementares: há uma norma que
+  estabelece requisitos (ISO/IEC 27001), normas que fornecem diretrizes para implementação e operação
+  (ISO/IEC 27002, 27003, 27004, 27005) e normas que endereçam setores e cenários específicos. O Quadro 1
+  sintetiza as principais normas da família.</p>
+  <p class="quadro-lbl">Quadro 1 – Principais normas da família ABNT NBR ISO/IEC 27000</p>
+  <table class="quadro">
+    <tr><th style="width:3.2cm;">Norma</th><th>Objeto principal</th></tr>
+    <tr><td>ISO/IEC 27000</td><td>Visão geral, princípios e vocabulário da segurança da informação</td></tr>
+    <tr><td>ISO/IEC 27001</td><td>Requisitos para o SGSI (única norma certificável da família)</td></tr>
+    <tr><td>ISO/IEC 27002</td><td>Controles de segurança da informação e diretrizes de aplicação</td></tr>
+    <tr><td>ISO/IEC 27003</td><td>Diretrizes para a implementação de um SGSI</td></tr>
+    <tr><td>ISO/IEC 27004</td><td>Monitoramento, medição, análise e avaliação da segurança da informação</td></tr>
+    <tr><td>ISO/IEC 27005</td><td>Gestão de riscos de segurança da informação</td></tr>
+    <tr><td>ISO/IEC 27017</td><td>Controles de segurança para serviços em nuvem</td></tr>
+    <tr><td>ISO/IEC 27018</td><td>Proteção de dados pessoais identificáveis em nuvens públicas</td></tr>
+    <tr><td>ISO/IEC 27035</td><td>Gestão de incidentes de segurança da informação</td></tr>
+    <tr><td>ISO/IEC 27701</td><td>Sistema de gestão da privacidade (extensão da 27001/27002)</td></tr>
+  </table>
+  <p class="fonte">Fonte: Elaborado pela autora (2025).</p>
+</div>
+
+<!-- ===================== SEÇÕES 3.1 e 3.2 (pág. 11) ===================== -->
+<div class="page">
+  <div class="pnum">11</div>
+  <h2 class="sec">3.1 ABNT NBR ISO/IEC 27000: VISÃO GERAL E VOCABULÁRIO</h2>
+  <p>A ABNT NBR ISO/IEC 27000, intitulada "Visão geral e vocabulário", é o documento introdutório da família.
+  Ela apresenta os princípios da segurança da informação, descreve a estrutura e a finalidade das demais normas
+  e define, de forma padronizada, os termos utilizados em toda a série — como ativo, ameaça, vulnerabilidade,
+  risco, controle e incidente. Ao uniformizar a terminologia, contribui para a comunicação precisa entre as
+  partes interessadas e para a correta interpretação dos demais documentos (ABNT, 2019).</p>
+  <p>A norma também reforça que a segurança da informação deve estar alinhada aos objetivos do negócio,
+  baseando-se na avaliação e no tratamento de riscos e na seleção adequada de controles, e que o SGSI deve
+  preservar as três propriedades fundamentais — confidencialidade, integridade e disponibilidade — em todos os
+  processos organizacionais.</p>
+  <h2 class="sec">3.2 ABNT NBR ISO/IEC 27001: REQUISITOS DO SGSI</h2>
+  <p>A ABNT NBR ISO/IEC 27001 é a peça central da família e a única que pode ser objeto de certificação por
+  organismo acreditado. Em sua edição atual, especifica os requisitos para estabelecer, implementar, manter e
+  melhorar continuamente um SGSI, aplicáveis a organizações de qualquer porte e setor de atividade
+  (ABNT, 2022a).</p>
+  <p>A norma é estruturada em dez cláusulas, das quais as cláusulas 4 a 10 contêm requisitos obrigatórios,
+  organizados em torno de: contexto da organização; liderança; planejamento; apoio; operação; avaliação do
+  desempenho; e melhoria. Os controles objetivos de segurança são elencados no Anexo A, e a decisão sobre sua
+  aplicação é documentada na declaração de aplicabilidade (SoA), que registra a inclusão, a exclusão e a
+  justificativa de cada controle.</p>
+</div>
+
+<!-- ===================== SEÇÃO 3.3 (pág. 12) ===================== -->
+<div class="page">
+  <div class="pnum">12</div>
+  <h2 class="sec">3.3 ABNT NBR ISO/IEC 27002: CONTROLES DE SEGURANÇA DA INFORMAÇÃO</h2>
+  <p>A ABNT NBR ISO/IEC 27002 tem origem histórica na norma britânica BS 7799, posteriormente publicada como
+  ISO/IEC 17799 e reelaborada como ISO/IEC 27002. Sua função é fornecer diretrizes e referências para a
+  seleção, implementação e gestão de controles de segurança da informação, complementando os requisitos
+  genéricos da ISO/IEC 27001 (ABNT, 2022b).</p>
+  <p>A edição de 2013 da norma organizava 114 controles em 14 seções temáticas, abrangendo políticas de
+  segurança, organização da segurança, segurança de recursos humanos, gestão de ativos, controle de acesso,
+  criptografia, segurança física e ambiental, segurança das operações, segurança das comunicações, aquisição e
+  desenvolvimento de sistemas, relacionamento com fornecedores, gestão de incidentes, continuidade do negócio e
+  conformidade.</p>
+  <p>A edição de 2022 promoveu significativa reestruturação: os controles foram consolidados para 93,
+  distribuídos em quatro temas — medidas organizacionais (37), medidas para pessoas (8), medidas físicas (14) e
+  medidas tecnológicas (34). Cada controle passou a ser descrito por atributos, como o tipo (preventivo,
+  detectivo ou corretivo), as propriedades de segurança preservadas e os conceitos de cibersegurança
+  associados, o que facilita a filtragem e a priorização dos controles (ABNT, 2022b).</p>
+  <p>Cumpre destacar que a 27002 não é certificável e não impõe requisitos: cabe à organização, a partir da
+  avaliação de riscos, justificar a adoção ou não de cada controle na declaração de aplicabilidade.</p>
+</div>
+
+<!-- ===================== SEÇÃO 3.4 (pág. 13) ===================== -->
+<div class="page">
+  <div class="pnum">13</div>
+  <h2 class="sec">3.4 OUTRAS NORMAS DA FAMÍLIA ISO/IEC 27000</h2>
+  <p>Além das três normas centrais, a família reúne documentos de apoio à implementação. A ISO/IEC 27003 oferece
+  diretrizes para a implementação do SGSI, incluindo projeto, operação, monitoramento e melhoria do sistema; a
+  ISO/IEC 27004 orienta o monitoramento, a medição, a análise e a avaliação da eficácia do SGSI, apoiando a
+  definição de indicadores; e a ISO/IEC 27005 detalha o processo de gestão de riscos de segurança da
+  informação, alinhado às convenções gerais da ISO 31000.</p>
+  <p>No âmbito setorial e de cenários específicos, destacam-se a ISO/IEC 27015, voltada às instituições
+  financeiras; a ISO/IEC 27017, que interpreta os controles da 27002 para serviços em nuvem; e a ISO/IEC 27018,
+  dedicada à proteção de dados pessoais identificáveis processados em nuvens públicas.</p>
+  <p>A família contempla ainda normas sobre gestão de incidentes (ISO/IEC 27035), segurança na relação com
+  fornecedores e na aquisição de software (ISO/IEC 27036), continuidade das TIC (ISO/IEC 27031) e perícia
+  digital (ISO/IEC 27037). Mais recentemente, a ISO/IEC 27701 estendeu o SGSI para um Sistema de Gestão da
+  Privacidade (PIMS), sendo amplamente utilizada como referência de conformidade com legislações de proteção
+  de dados, como a LGPD brasileira e o Regulamento Geral Europeu (GDPR).</p>
+  <p>Esse conjunto consolidado de documentos confere à família 27000 caráter abrangente, permitindo que
+  organizações de diferentes setores e maturidades encontrem orientação específica para suas necessidades de
+  segurança, cibersegurança e privacidade.</p>
+</div>
+
+<!-- ===================== SEÇÃO 4 + 4.1 (pág. 14) ===================== -->
+<div class="page">
+  <div class="pnum">14</div>
+  <h1 class="sec">4 O SISTEMA DE GESTÃO DA SEGURANÇA DA INFORMAÇÃO</h1>
+  <p>O Sistema de Gestão da Segurança da Informação (SGSI) é o instrumento pelo qual a organização
+  operacionaliza suas decisões em matéria de segurança. A ABNT NBR ISO/IEC 27000 o define como:</p>
+  <p class="citacao">
+    Sistema de gestão da segurança da informação: parte do sistema de gestão global, baseado em uma abordagem
+    de riscos de negócio, para estabelecer, implementar, operar, monitorar, analisar criticamente, manter e
+    melhorar a segurança da informação. (ABNT, 2019, p. 4)
+  </p>
+  <p>O SGSI compreende, portanto, políticas, procedimentos, diretrizes, recursos e atividades associadas, geridos
+  pela organização com o objetivo de proteger seus ativos de informação. Sua implantação exige o comprometimento
+  da alta direção, a definição de responsabilidades, a alocação de recursos e a realização periódica de revisões
+  críticas (ABNT, 2022a).</p>
+  <h2 class="sec">4.1 O CICLO PDCA</h2>
+  <p>A metodologia estruturante do SGSI é o ciclo PDCA (Plan-Do-Check-Act), também conhecido como ciclo de
+  Deming, que promove a melhoria contínua por meio de quatro fases iterativas.</p>
+  <p>Na fase Planejar (Plan), a organização estabelece a política, os objetivos, os processos e os procedimentos
+  necessários para a entrega de resultados alinhados aos riscos do negócio, incluindo a avaliação de riscos e a
+  seleção de controles. Na fase Fazer (Do), os controles são implementados e operacionalizados, incluindo
+  treinamentos, conscientização e execução dos processos planejados.</p>
+  <p>Na fase Verificar (Check), o desempenho do SGSI é monitorado e avaliado mediante indicadores, auditoria
+  interna e revisão pela direção. Na fase Agir (Act), são adotadas medidas sobre as não conformidades
+  identificadas, realimentando o ciclo com novas melhorias, de modo que a segurança permaneça eficaz frente às
+  ameaças em constante evolução.</p>
+</div>
+
+<!-- ===================== SEÇÕES 4.2 e 4.3 (pág. 15) ===================== -->
+<div class="page">
+  <div class="pnum">15</div>
+  <h2 class="sec">4.2 GESTÃO DE RISCOS DE SEGURANÇA DA INFORMAÇÃO</h2>
+  <p>A gestão de riscos é o núcleo da abordagem da família 27000. O processo inicia-se pelo estabelecimento do
+  contexto, no qual são definidos os critérios de risco, o escopo e as responsabilidades. Segue-se a avaliação
+  de riscos, composta pela identificação dos ativos, das ameaças e das vulnerabilidades relevantes, pela análise
+  das consequências e das probabilidades, e pela avaliação comparativa frente aos critérios estabelecidos
+  (ABNT, 2019).</p>
+  <p>O tratamento dos riscos pode envolver quatro estratégias: modificar o risco, por meio da implementação de
+  controles; reter (aceitar) o risco, quando justificável pelos objetivos da organização; compartilhar (ou
+  transferir) o risco, por exemplo por meio de seguros ou contratos com terceiros; e evitar o risco, quando a
+  atividade que o gera é descontinuada. O risco residual deve ser aprovado pelo detentor do risco, e o processo
+  documentado na declaração de aplicabilidade e no plano de tratamento (ABNT, 2022a).</p>
+  <h2 class="sec">4.3 CERTIFICAÇÃO, BENEFÍCIOS E DESAFIOS</h2>
+  <p>A certificação ISO/IEC 27001 é voluntária e realizada por organismos acreditados. Tipicamente, o processo
+  envolve diagnóstico inicial (gap analysis), implementação do SGSI, auditoria interna e revisão pela direção,
+  seguidas da auditoria de certificação em duas etapas — análise da documentação e verificação in loco da
+  eficácia do sistema. O certificado tem validade de três anos, condicionada a auditorias de acompanhamento
+  anuais e a auditoria de renovação.</p>
+  <p>Entre os benefícios associados à certificação destacam-se o aumento da credibilidade junto a clientes e
+  parceiros, o diferencial competitivo em licitações e contratos corporativos, a melhor aderência a exigências
+  legais e regulatórias — incluindo a LGPD — e a redução da frequência e do impacto de incidentes
+  (ABNT, 2022a; SILVA, 2014).</p>
+</div>
+
+<!-- ===================== SEÇÃO 4.3 (continuação, pág. 16) ===================== -->
+<div class="page">
+  <div class="pnum">16</div>
+  <p>Por outro lado, a implementação de um SGSI enfrenta desafios relevantes: custos de consultoria, auditoria e
+  certificação; necessidade de dedicação de equipe interna; resistência às mudanças de comportamento;
+  dificuldade de manter a aderência ao longo do tempo; e risco de burocratização excessiva, que distancia a
+  norma da prática operacional.</p>
+  <p>Superar esses desafios exige tratar o SGSI como projeto estratégico, com patrocínio executivo, comunicação
+  constante e indicadores claros de desempenho. A experiência acumulada na literatura indica que os maiores
+  retornos ocorrem quando os controles são incorporados aos processos de negócio, e não tratados como exigência
+  documental isolada (SÊMOLA, 2003).</p>
+  <p>Destaca-se, ainda, que a certificação não elimina por completo a possibilidade de incidentes: o objetivo do
+  SGSI é gerenciar riscos a níveis aceitáveis, garantir a capacidade de resposta e de recuperação e demonstrar,
+  de forma verificável, o compromisso da organização com a proteção das informações sob sua responsabilidade.</p>
+</div>
+
+<!-- ===================== 5 CONSIDERAÇÕES FINAIS (pág. 17) ===================== -->
+<div class="page">
+  <div class="pnum">17</div>
+  <h1 class="sec">5 CONSIDERAÇÕES FINAIS</h1>
+  <p>Este artigo analisou a família de normas ISO/IEC 27000 e sua contribuição para a gestão da segurança da
+  informação nas organizações. Constatou-se que a família constitui um conjunto coerente e complementar de
+  documentos, no qual a ISO/IEC 27000 fornece o vocabulário comum, a ISO/IEC 27001 estabelece os requisitos
+  certificáveis do SGSI e a ISO/IEC 27002 orienta a seleção e a implementação dos controles de segurança.</p>
+  <p>Verificou-se, igualmente, que a abordagem da norma articula dois elementos estruturantes: o ciclo PDCA, que
+  institucionaliza a melhoria contínua, e a gestão de riscos, que direciona os esforços de proteção aos cenários
+  mais relevantes para o negócio. Essa combinação confere ao SGSI flexibilidade para se adaptar a diferentes
+  portes, setores e contextos regulatórios, incluindo o ambiente brasileiro de proteção de dados.</p>
+  <p>Conclui-se que a adoção da família ISO/IEC 27000 representa, para as organizações, não apenas um mecanismo
+  de conformidade, mas um instrumento estratégico de governança, capaz de alinhar a segurança da informação aos
+  objetivos de negócio, mitigar riscos crescentes de natureza cibernética e fortalecer a confiança de clientes,
+  fornecedores e demais partes interessadas.</p>
+  <p>Como sugestões para pesquisas futuras, recomenda-se o estudo empírico da maturidade de SGSI em organizações
+  brasileiras, a análise da articulação entre a ISO/IEC 27001 e a LGPD e a investigação dos impactos das
+  tecnologias emergentes — como inteligência artificial e computação em nuvem — sobre a seleção de controles de
+  segurança.</p>
+</div>
+
+<!-- ===================== REFERÊNCIAS (pág. 18) ===================== -->
+<div class="page">
+  <div class="pnum">18</div>
+  <h1 class="pre">REFERÊNCIAS</h1>
+  <div class="refs">
+    <p>ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. <b>ABNT NBR ISO/IEC 27000</b>: tecnologia da informação —
+    técnicas de segurança — sistemas de gestão da segurança da informação — visão geral e vocabulário.
+    Rio de Janeiro: ABNT, 2019.</p>
+    <p>ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. <b>ABNT NBR ISO/IEC 27001</b>: informação e cibersegurança —
+    sistemas de gestão da segurança da informação — requisitos. Rio de Janeiro: ABNT, 2022a.</p>
+    <p>ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. <b>ABNT NBR ISO/IEC 27002</b>: informação, cibersegurança e
+    proteção da privacidade — controles de segurança da informação. Rio de Janeiro: ABNT, 2022b.</p>
+    <p>BRASIL. <b>Lei nº 13.709</b>, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais (LGPD).
+    Brasília, DF: Presidência da República, 2018. Disponível em:
+    https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm. Acesso em: 12 nov. 2025.</p>
+    <p>SÊMOLA, Marcos. <b>Gestão da segurança da informação</b>. Rio de Janeiro: Elsevier, 2003.</p>
+    <p>SILVA, Alexandre de Carvalho. <b>Gestão da segurança da informação</b>: visão além dos filtros.
+    2. ed. Rio de Janeiro: Brasport, 2014.</p>
+  </div>
+</div>
+
+<div class="toolbar"><button onclick="window.print()">🖨️ Imprimir / Salvar em PDF</button></div>
+
+</body>
+</html>
