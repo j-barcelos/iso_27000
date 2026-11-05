@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Making Agreements — The IT Support Contract | Business Partner A2 · Unit 2.4 (IT Edition)</title>
+<style>
+  :root{
+    --navy:#0e2a47; --blue:#155e94; --sky:#eaf2fb; --orange:#f2811d; --teal:#0e8a7d;
+    --green:#1d8a4e; --red:#c0392b; --ink:#22303e; --muted:#5b6b7a; --line:#dde5ee;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:#0b1e33;font-family:"Segoe UI",Arial,Helvetica,sans-serif}
+
+  /* ============ STAGE (16:9 fixo, escalado via JS) ============ */
+  .stage{position:absolute;top:50%;left:50%;width:1280px;height:720px;
+         transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center;}
+  .slide{position:absolute;inset:0;background:#fff;border-radius:16px;overflow:hidden;
+         padding:48px 64px 40px;opacity:0;visibility:hidden;transition:opacity .35s ease;
+         display:flex;flex-direction:column;box-shadow:0 18px 60px rgba(0,0,0,.45);}
+  .slide.active{opacity:1;visibility:visible}
+
+  .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;
+          font-size:13px;letter-spacing:1.6px;font-weight:700;color:var(--muted)}
+  .toprow .chip{background:var(--orange);color:#fff;padding:4px 12px;border-radius:6px;letter-spacing:1px}
+  .slide h1,.slide h2{color:var(--navy);line-height:1.15}
+  .slide h2{font-size:44px;margin-bottom:8px}
+  .bar{width:72px;height:6px;background:var(--orange);border-radius:3px;margin:6px 0 26px}
+  .sub{color:var(--muted);font-size:22px}
+
+  ul.b{list-style:none;font-size:26px;line-height:1.45}
+  ul.b li{padding:9px 0 9px 34px;position:relative}
+  ul.b li::before{content:"▸";position:absolute;left:6px;color:var(--orange);font-weight:700}
+  ul.b b{color:var(--blue)}
+  .hl{background:#fff3e4;border-radius:8px;padding:2px 10px}
+
+  /* ===== Slide 1 — capa ===== */
+  .cover{background:linear-gradient(135deg,#0e2a47,#155e94);color:#fff;justify-content:center}
+  .cover .toprow{color:#9fc0dd}.cover .toprow .chip{background:var(--orange)}
+  .cover h1{font-size:76px;margin:10px 0 6px}
+  .cover .sub2{font-size:32px;color:#cfe2f3;margin-bottom:26px}
+  .cover .em{font-size:96px;line-height:1;margin-bottom:8px}
+  .tags{display:flex;gap:12px;margin-top:26px}
+  .tags span{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);
+             border-radius:24px;padding:8px 20px;font-size:18px;color:#eaf3fb}
+
+  /* ===== goals ===== */
+  .goalrow{display:flex;align-items:center;gap:20px;background:var(--sky);
+           border:1px solid var(--line);border-radius:14px;padding:16px 22px;margin-bottom:14px}
+  .goalrow .ico{font-size:40px;width:56px;text-align:center}
+  .goalrow p{font-size:24px}.goalrow p b{color:var(--navy)}
+  .goalrow p span{color:var(--muted);font-style:italic}
+
+  /* ===== warm-up cards ===== */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .qcard{background:#f9fbfd;border:1px solid var(--line);border-left:8px solid var(--blue);
+         border-radius:12px;padding:22px;display:flex;gap:18px;align-items:center}
+  .qcard .ico{font-size:48px}
+  .qcard p{font-size:25px;font-weight:600;color:var(--navy)}
+  .taskbar{margin-top:auto;background:#fff3e4;border-radius:12px;padding:14px 22px;
+           font-size:22px;font-weight:600;color:var(--navy)}
+
+  /* ===== profile cards ===== */
+  .profile{display:grid;grid-template-columns:300px 1fr;gap:36px;align-items:start;flex:1}
+  .pcard{background:linear-gradient(160deg,var(--sky),#fff);border:1px solid var(--line);
+         border-radius:16px;padding:26px;text-align:center}
+  .pcard .av{width:110px;height:110px;border-radius:50%;background:#fff;border:4px solid var(--orange);
+             display:flex;align-items:center;justify-content:center;font-size:58px;margin:0 auto 14px}
+  .pcard h3{font-size:28px;color:var(--navy)}
+  .pcard .role{display:inline-block;margin:8px 0;background:var(--navy);color:#fff;
+               border-radius:20px;padding:5px 16px;font-size:16px;letter-spacing:1px}
+  .pcard .co{font-size:20px;color:var(--muted)}
+  .quote{margin-top:18px;background:#fff;border:1px dashed var(--orange);border-radius:12px;
+         padding:12px;font-size:19px;font-style:italic;color:var(--navy)}
+  .facts{font-size:25px;align-self:center}
+  .facts .price{color:var(--orange);font-weight:800}
+
+  /* ===== vocab ===== */
+  .vgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1;align-content:center}
+  .vcard{background:#f9fbfd;border:1px solid var(--line);border-radius:14px;padding:18px 12px;text-align:center}
+  .vcard .ico{font-size:44px}
+  .vcard b{display:block;font-size:22px;color:var(--blue);margin:8px 0 4px}
+  .vcard span{font-size:16px;color:var(--muted)}
+
+  /* ===== function slides ===== */
+  .pattern{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+  .pattern span{background:var(--navy);color:#fff;border-radius:10px;padding:10px 18px;font-size:22px;font-weight:600}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1}
+  .panel h3{font-size:18px;letter-spacing:2px;margin-bottom:10px}
+  .panel.blue h3{color:var(--blue)} .panel.orange h3{color:var(--orange)}
+  .panel.blue{border-left:6px solid var(--blue);padding-left:22px}
+  .panel.orange{border-left:6px solid var(--orange);padding-left:22px}
+  .cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;flex:1;align-content:center}
+  .col{border-radius:14px;padding:22px 20px;font-size:21px}
+  .col h3{font-size:17px;letter-spacing:2px;margin-bottom:14px}
+  .col p{padding:8px 0;border-top:1px dashed rgba(0,0,0,.15)}
+  .col.ok{background:#e9f7ee;border-top:8px solid var(--green)}.col.ok h3{color:var(--green)}
+  .col.no{background:#fdeceb;border-top:8px solid var(--red)}.col.no h3{color:var(--red)}
+  .col.mid{background:#fdf3e6;border-top:8px solid var(--orange)}.col.mid h3{color:var(--orange)}
+
+  /* ===== chat ===== */
+  .chat{background:#eef3f8;border-radius:16px;padding:24px 28px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .msg{max-width:72%;padding:12px 18px;border-radius:16px;font-size:21px}
+  .msg b{display:block;font-size:12px;letter-spacing:1.5px;margin-bottom:2px}
+  .msg.c{align-self:flex-start;background:#fff;border-left:5px solid var(--blue)} .msg.c b{color:var(--blue)}
+  .msg.p{align-self:flex-end;background:#e6f5ef;border-right:5px solid var(--green);text-align:right} .msg.p b{color:var(--green)}
+
+  /* ===== roadmap ===== */
+  .road{display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr;align-items:center;gap:8px;flex:1;align-content:center}
+  .step{background:#f9fbfd;border:1px solid var(--line);border-radius:16px;padding:30px 24px;text-align:center}
+  .step .n{display:inline-flex;width:52px;height:52px;border-radius:50%;background:var(--navy);color:#fff;
+           align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-bottom:14px}
+  .step .ico{font-size:44px;display:block;margin-bottom:10px}
+  .step h3{font-size:26px;color:var(--navy);margin-bottom:8px}
+  .step p{font-size:19px;color:var(--muted)}
+  .arw{font-size:40px;color:var(--orange);text-align:center;font-weight:800}
+  .final{margin-top:26px;text-align:center;font-size:24px;font-weight:700;color:var(--navy)}
+
+  /* ===== phrase banks ===== */
+  .bank{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;align-content:start}
+  .bank .head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .bank .head .dot{width:18px;height:18px;border-radius:50%}
+  .bank .head h3{font-size:26px;color:var(--navy)}
+  .bank li{list-style:none;font-size:22px;padding:10px 0 10px 26px;position:relative;border-bottom:1px solid var(--line)}
+  .bank li::before{content:"›";position:absolute;left:4px;font-weight:800;color:var(--muted)}
+
+  /* ===== roleplay ===== */
+  .setup{display:flex;gap:14px;margin-bottom:20px}
+  .setup span{background:var(--sky);border:1px solid var(--line);color:var(--navy);
+              border-radius:10px;padding:8px 16px;font-size:19px;font-weight:600}
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1}
+  .rcard{border-radius:16px;padding:22px 24px;display:flex;flex-direction:column}
+  .rcard.a{background:#eaf2fb;border-top:10px solid var(--blue)}
+  .rcard.b{background:#fdf1e4;border-top:10px solid var(--orange)}
+  .rcard h3{font-size:26px;color:var(--navy)}
+  .rcard .who{font-size:17px;color:var(--muted);margin-bottom:12px}
+  .rcard ul{list-style:none;font-size:20px;line-height:1.4}
+  .rcard ul li{padding:6px 0 6px 26px;position:relative}
+  .rcard ul li::before{content:"✓";position:absolute;left:0;font-weight:800}
+  .rcard.a li::before{color:var(--blue)} .rcard.b li::before{color:var(--orange)}
+  .rcard .goal{margin-top:auto;background:#fff;border-radius:10px;padding:10px 16px;
+               font-size:19px;font-weight:700;color:var(--navy)}
+
+  /* ===== deal sheet ===== */
+  .paper{max-width:860px;margin:0 auto;background:#fffdf4;border:2px solid var(--navy);
+         border-radius:14px;padding:34px 44px;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .paper h3{text-align:center;font-size:30px;letter-spacing:2px;color:var(--navy);margin-bottom:6px}
+  .paper .between{text-align:center;color:var(--muted);font-size:19px;margin-bottom:22px}
+  .field{font-size:23px;margin:14px 0}
+  .blank{display:inline-block;min-width:420px;border-bottom:2px dotted var(--muted)}
+  .sig{display:flex;justify-content:space-between;margin-top:34px;font-size:18px;color:var(--muted)}
+  .sig span{border-top:1.5px solid var(--muted);padding-top:6px;min-width:240px;text-align:center}
+  .signbar{margin-top:16px;text-align:center;font-size:22px;font-weight:700;color:var(--teal)}
+
+  /* ===== wrap-up ===== */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:44px;flex:1;align-content:center}
+  .check{list-style:none;font-size:24px}
+  .check li{padding:10px 0 10px 40px;position:relative}
+  .check li::before{content:"☐";position:absolute;left:0;color:var(--teal);font-size:26px}
+  .hw{background:#fff3e4;border-radius:14px;padding:20px 24px;font-size:21px;color:var(--navy)}
+  .hw b{color:var(--orange)}
+  .done{font-size:30px;font-weight:800;color:var(--green);text-align:center;margin-top:8px}
+
+  /* ============ UI do player ============ */
+  .progress{position:fixed;top:0;left:0;height:5px;background:var(--orange);width:0;z-index:50;transition:width .3s}
+  .hud{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:14px;align-items:center;z-index:50}
+  .hud .count{color:#cfe2f3;font-size:14px;letter-spacing:1px}
+  .hud button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);color:#fff;
+              width:44px;height:44px;border-radius:10px;font-size:18px;cursor:pointer}
+  .hud button:hover{background:var(--orange);border-color:var(--orange)}
+  .hint{position:fixed;bottom:22px;right:22px;color:#5f7ea0;font-size:12px;z-index:50}
+
+  /* ============ print: 1 slide por página ============ */
+  @media print{
+    html,body{overflow:visible;background:#fff}
+    .progress,.hud,.hint{display:none}
+    .stage{position:static;transform:none;width:1280px;height:auto}
+    .slide{position:relative;inset:auto;opacity:1;visibility:visible;width:1280px;height:720px;
+           border-radius:0;box-shadow:none;page-break-after:always;break-after:page}
+  }
+  @page{size:1280px 720px;margin:0}
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+
+<div class="stage" id="stage">
+
+  <!-- 1 ▸ CAPA -->
+  <section class="slide cover active">
+    <div class="toprow"><span class="chip">UNIT 2.4 · WORK SKILLS</span><span>MAKING AGREEMENTS</span></div>
+    <div class="em">🤝💻</div>
+    <h1>Making Agreements</h1>
+    <div class="sub2">The IT Support Contract</div>
+    <div class="tags">
+      <span>Business English for IT</span><span>Level A2</span><span>Roleplay: 3–5 min</span>
+    </div>
+  </section>
+
+  <!-- 2 ▸ OBJETIVOS -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">TODAY'S GOALS</span><span>02</span></div>
+    <h2>By the end of this lesson, you can…</h2><div class="bar"></div>
+    <div class="goalrow"><div class="ico">❓</div><p><b>Ask about IT services</b> — <span>"Can you provide daily backup?"</span></p></div>
+    <div class="goalrow"><div class="ico">🛠️</div><p><b>Make offers</b> — <span>"We can fix problems remotely."</span></p></div>
+    <div class="goalrow"><div class="ico">👍</div><p><b>Accept or say no politely</b> — <span>"That sounds good." / "Sorry, that's too expensive."</span></p></div>
+    <div class="goalrow"><div class="ico">🤝</div><p><b>Negotiate and close a deal</b> — <span>"Let's say $350." → "We have an agreement!"</span></p></div>
+  </section>
+
+  <!-- 3 ▸ WARM-UP -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">WARM-UP</span><span>03</span></div>
+    <h2>What's the Problem?</h2><div class="bar"></div>
+    <div class="grid2">
+      <div class="qcard"><div class="ico">💻</div><p>Is your computer slow?</p></div>
+      <div class="qcard"><div class="ico">📶</div><p>Does your network work?</p></div>
+      <div class="qcard"><div class="ico">🐛</div><p>Do you have a virus?</p></div>
+      <div class="qcard"><div class="ico">☁️</div><p>Do you have a backup?</p></div>
+    </div>
+    <div class="taskbar">🗣️ Talk to your partner — 1 minute</div>
+  </section>
+
+  <!-- 4 ▸ CLIENTE -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">THE SCENARIO</span><span>04</span></div>
+    <h2>The Client: Bright Ideas Ltd.</h2><div class="bar"></div>
+    <div class="profile">
+      <div class="pcard">
+        <div class="av">👩‍💼</div>
+        <h3>Sofia</h3><span class="role">OFFICE MANAGER</span>
+        <div class="co">Bright Ideas Ltd.</div>
+        <div class="quote">"We need help with our IT!"</div>
+      </div>
+      <ul class="b facts">
+        <li>Small office with <b>20 computers</b></li>
+        <li>Problems: <b>slow network</b>, old software, no backup</li>
+        <li>She wants an <span class="hl">IT Support Contract</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 ▸ FORNECEDOR -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">THE SCENARIO</span><span>05</span></div>
+    <h2>The Provider: TechFix Solutions</h2><div class="bar"></div>
+    <div class="profile">
+      <div class="pcard">
+        <div class="av">👨‍🔧</div>
+        <h3>David</h3><span class="role">IT SERVICE PROVIDER</span>
+        <div class="co">TechFix Solutions</div>
+        <div class="quote">"We can help you!"</div>
+      </div>
+      <ul class="b facts">
+        <li>TechFix fixes IT problems for companies</li>
+        <li>Services: fix problems · install software · backup</li>
+        <li>Standard plan: <span class="price">$450 a month</span></li>
+        <li>His goal: <b>close the deal</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 ▸ VOCABULÁRIO -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">KEY VOCABULARY</span><span>06</span></div>
+    <h2>IT Support Services</h2><div class="bar"></div>
+    <div class="vgrid">
+      <div class="vcard"><div class="ico">☁️</div><b>backup</b><span>save files every day</span></div>
+      <div class="vcard"><div class="ico">📶</div><b>network</b><span>internet and connections</span></div>
+      <div class="vcard"><div class="ico">🔧</div><b>fix problems</b><span>computers and printers</span></div>
+      <div class="vcard"><div class="ico">💾</div><b>install software</b><span>programs and updates</span></div>
+      <div class="vcard"><div class="ico">🛡️</div><b>virus protection</b><span>security</span></div>
+      <div class="vcard"><div class="ico">🎧</div><b>helpdesk</b><span>help by phone or email</span></div>
+      <div class="vcard"><div class="ico">🚗</div><b>onsite visit</b><span>technician at your office</span></div>
+      <div class="vcard"><div class="ico">🏷️</div><b>monthly price</b><span>$ per month</span></div>
+    </div>
+  </section>
+
+  <!-- 7 ▸ FUNÇÃO 1 -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">FUNCTION 1</span><span>07</span></div>
+    <h2>Asking About IT Services</h2><div class="bar"></div>
+    <div class="pattern"><span>Can you … ?</span><span>Do you … ?</span><span>What about … ?</span><span>How much / How fast … ?</span></div>
+    <div class="cols2">
+      <div class="panel blue"><h3>SCOPE — WHAT'S INCLUDED?</h3>
+        <ul class="b">
+          <li>Can you provide <b>daily backup</b>?</li>
+          <li>Do you fix problems <b>remotely</b>?</li>
+          <li>Is <b>onsite support</b> included?</li>
+        </ul>
+      </div>
+      <div class="panel orange"><h3>DETAILS — TIME & PRICE</h3>
+        <ul class="b">
+          <li>What about <b>weekend support</b>?</li>
+          <li>How fast do you <b>answer a problem</b>?</li>
+          <li>How much is it <b>per month</b>?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 ▸ FUNÇÃO 2 -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">FUNCTION 2</span><span>08</span></div>
+    <h2>Proposing Terms and Offers</h2><div class="bar"></div>
+    <div class="pattern"><span>We can …</span><span>I can offer …</span><span>How about … ?</span><span>For $X a month, we …</span></div>
+    <ul class="b">
+      <li>We can <b>fix problems remotely</b>.</li>
+      <li>We can <b>install all your software</b>.</li>
+      <li>For $300 a month, we provide <b>daily backup</b>.</li>
+      <li>I can offer a <span class="hl">10% discount</span>.</li>
+      <li>How about support from <b>9 to 5</b>, Monday to Friday?</li>
+      <li>Let's say <b>$350 a month</b>. Is that OK?</li>
+    </ul>
+  </section>
+
+  <!-- 9 ▸ FUNÇÃO 3 -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">FUNCTION 3</span><span>09</span></div>
+    <h2>Accept, Refuse, Negotiate</h2><div class="bar"></div>
+    <div class="cols3">
+      <div class="col ok"><h3>✅ ACCEPT</h3>
+        <p>That sounds good.</p><p>OK, no problem.</p><p>That works for us.</p></div>
+      <div class="col no"><h3>❌ REFUSE (POLITE)</h3>
+        <p>Sorry, that's too expensive.</p><p>I'm afraid we can't do that.</p><p>That doesn't work for us.</p></div>
+      <div class="col mid"><h3>🔁 NEGOTIATE</h3>
+        <p>What about…?</p><p>Can you give us a better price?</p><p>Let's say…</p></div>
+    </div>
+  </section>
+
+  <!-- 10 ▸ DIÁLOGO -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">MODEL DIALOGUE</span><span>10</span></div>
+    <h2>The Deal: A Short Dialogue</h2><div class="bar"></div>
+    <div class="chat">
+      <div class="msg c"><b>SOFIA · CLIENT</b>Can you provide daily backup?</div>
+      <div class="msg p"><b>DAVID · TECHFIX</b>Yes, we can. For $450 a month.</div>
+      <div class="msg c"><b>SOFIA · CLIENT</b>Hmm. $450 is expensive. Can you give us a discount?</div>
+      <div class="msg p"><b>DAVID · TECHFIX</b>I can offer a 10% discount. That's $405.</div>
+      <div class="msg c"><b>SOFIA · CLIENT</b>What about weekend support?</div>
+      <div class="msg p"><b>DAVID · TECHFIX</b>Sorry, we can't do weekends. But we answer in 2 hours.</div>
+      <div class="msg c"><b>SOFIA · CLIENT</b>OK… let's talk about the price. 🤝</div>
+    </div>
+  </section>
+
+  <!-- 11 ▸ MAPA DA NEGOCIAÇÃO -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">NEGOTIATION MAP</span><span>11</span></div>
+    <h2>3 Points → 1 Agreement</h2><div class="bar"></div>
+    <div class="road">
+      <div class="step"><span class="n">1</span><span class="ico">⚙️</span><h3>SERVICES</h3><p>What's included?<br>Backup? Software? Onsite?</p></div>
+      <div class="arw">→</div>
+      <div class="step"><span class="n">2</span><span class="ico">⏰</span><h3>TIME</h3><p>Support hours?<br>Response time? Weekends?</p></div>
+      <div class="arw">→</div>
+      <div class="step"><span class="n">3</span><span class="ico">💰</span><h3>PRICE</h3><p>$ per month?<br>Discount?</p></div>
+    </div>
+    <div class="final">3 points → 1 agreement → signature ✍️</div>
+  </section>
+
+  <!-- 12 ▸ PHRASE BANK 1 -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">PHRASE BANK 1</span><span>12</span></div>
+    <h2>Your Phrase Bank: Ask & Offer</h2><div class="bar"></div>
+    <div class="bank">
+      <div>
+        <div class="head"><span class="dot" style="background:var(--blue)"></span><h3>ASKING ABOUT IT SERVICES</h3></div>
+        <ul>
+          <li>Can you provide daily backup?</li>
+          <li>Do you fix problems remotely?</li>
+          <li>What about weekend support?</li>
+          <li>How fast do you answer a problem?</li>
+          <li>Is onsite support included?</li>
+          <li>How much is it per month?</li>
+        </ul>
+      </div>
+      <div>
+        <div class="head"><span class="dot" style="background:var(--orange)"></span><h3>PROPOSING TERMS & OFFERS</h3></div>
+        <ul>
+          <li>We can fix problems remotely.</li>
+          <li>We can install all your software.</li>
+          <li>For $300 a month, we provide daily backup.</li>
+          <li>I can offer a 10% discount.</li>
+          <li>How about support from 9 to 5, Mon–Fri?</li>
+          <li>Let's say $350 a month. Is that OK?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 ▸ PHRASE BANK 2 -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">PHRASE BANK 2</span><span>13</span></div>
+    <h2>Your Phrase Bank: Agree & Close</h2><div class="bar"></div>
+    <div class="bank">
+      <div>
+        <div class="head"><span class="dot" style="background:var(--green)"></span><h3>AGREE / REFUSE</h3></div>
+        <ul>
+          <li>That sounds good.</li>
+          <li>OK, no problem.</li>
+          <li>Sorry, that's too expensive.</li>
+          <li>I'm afraid we can't do that.</li>
+          <li>Can you give us a better price?</li>
+        </ul>
+      </div>
+      <div>
+        <div class="head"><span class="dot" style="background:var(--teal)"></span><h3>CLOSE THE DEAL</h3></div>
+        <ul>
+          <li>So, to confirm: backup, support, $350.</li>
+          <li>We have an agreement!</li>
+          <li>I'll send the contract by email.</li>
+          <li>Let's start on Monday.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 ▸ ROLEPLAY -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">ROLEPLAY</span><span>14</span></div>
+    <h2>Your Turn: Negotiate the Contract!</h2><div class="bar"></div>
+    <div class="setup"><span>👥 Pair work: A + B</span><span>⏱️ 4 minutes</span><span>💬 Use the Phrase Bank</span><span>🔄 Then swap roles</span></div>
+    <div class="roles">
+      <div class="rcard a">
+        <h3>👩‍💼 ROLE A — Sofia</h3><div class="who">Office Manager · Bright Ideas Ltd. (Client)</div>
+        <ul>
+          <li>Budget: <b>$350 a month — MAX!</b></li>
+          <li>Must have: <b>daily backup</b> + answer in <b>4 hours</b></li>
+          <li>Nice to have: Saturday support</li>
+          <li>Say <b>no politely</b> to the first price</li>
+          <li>Ask at least <b>3 questions</b></li>
+        </ul>
+        <div class="goal">🎯 GOAL: a good contract — under $350!</div>
+      </div>
+      <div class="rcard b">
+        <h3>👨‍🔧 ROLE B — David</h3><div class="who">IT Service Provider · TechFix Solutions</div>
+        <ul>
+          <li>Start at <b>$450 a month</b></li>
+          <li><b>Do not go below $330!</b></li>
+          <li>Offer: 10% discount (12-month contract) · 4-hour answer (+$50) · Saturday support (+$60)</li>
+          <li>Offer <b>services first</b>, price second</li>
+          <li>Close with a summary: <b>"So, to confirm…"</b></li>
+        </ul>
+        <div class="goal">🎯 GOAL: close the deal — $330 or more!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 ▸ DEAL SHEET -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">TASK OUTPUT</span><span>15</span></div>
+    <h2>The Deal Sheet</h2><div class="bar"></div>
+    <div class="paper">
+      <h3>IT SUPPORT CONTRACT</h3>
+      <div class="between">Bright Ideas Ltd. &nbsp;↔&nbsp; TechFix Solutions</div>
+      <div class="field">✉️ Services included: <span class="blank"></span></div>
+      <div class="field">⏰ Support hours: <span class="blank"></span></div>
+      <div class="field">⚡ Response time: <span class="blank"></span></div>
+      <div class="field">💰 Monthly price: $ <span class="blank" style="min-width:300px"></span></div>
+      <div class="sig"><span>Sofia — Client</span><span>David — Provider</span></div>
+    </div>
+    <div class="signbar">🗣️ Complete together → then read your agreement to the class.</div>
+  </section>
+
+  <!-- 16 ▸ WRAP-UP -->
+  <section class="slide">
+    <div class="toprow"><span class="chip">WRAP-UP</span><span>16</span></div>
+    <h2>Do We Have an Agreement?</h2><div class="bar"></div>
+    <div class="two">
+      <div>
+        <ul class="b" style="font-size:24px">
+          <li>Today you <b>asked questions</b> about IT services</li>
+          <li>You <b>made offers</b> and said no politely</li>
+          <li>You <b>negotiated</b> scope, time and price</li>
+          <li>You <b>closed a deal</b> — in English! 🤝</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="check">
+          <li>5 key phrases used</li>
+          <li>1 polite "no"</li>
+          <li>1 offer with "How about… / Let's say…"</li>
+          <li>1 signed Deal Sheet</li>
+        </ul>
+        <div class="hw">📝 <b>Homework:</b> Write a 3-sentence email:<br><i>"Dear David, to confirm our agreement…"</i></div>
+      </div>
+    </div>
+    <div class="done">GREAT JOB! ✔️</div>
+  </section>
+
+</div>
+
+<div class="hud">
+  <button id="prev" title="Anterior">◀</button>
+  <span class="count" id="count">1 / 16</span>
+  <button id="next" title="Próximo">▶</button>
+  <button id="fs" title="Tela cheia (F)">⛶</button>
+  <button id="print" title="Imprimir / Salvar PDF (Ctrl+P)">🖨️</button>
+</div>
+<div class="hint">← → navegar · F tela cheia · 🖨️ imprimir / PDF</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];let i=0;
+  const prog=document.getElementById('prog'),count=document.getElementById('count'),stage=document.getElementById('stage');
+  function show(n){i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    count.textContent=(i+1)+' / '+slides.length;
+    prog.style.width=((i+1)/slides.length*100)+'%';}
+  function fit(){const s=Math.min(innerWidth/1300,innerHeight/740);stage.style.setProperty('--s',s);}
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  document.getElementById('fs').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+  document.getElementById('print').onclick=()=>window.print();
+  addEventListener('keydown',e=>{
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1);}
+    if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
+    if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+    if(e.key.toLowerCase()==='f')document.getElementById('fs').click();
+    if(e.key.toLowerCase()==='p'&&(e.ctrlKey||e.metaKey)){/* deixa o navegador imprimir */}});
+  let x0=null;
+  addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+  addEventListener('touchend',e=>{if(x0===null)return;const d=e.changedTouches[0].clientX-x0;
+    if(d<-50)show(i+1); if(d>50)show(i-1); x0=null;});
+  addEventListener('resize',fit);fit();show(0);
+</script>
+</body>
+</html>
